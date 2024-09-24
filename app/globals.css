@@ -3,9 +3,17 @@
 @tailwind utilities;
 
 html {
-  background-color: white;
+  background-color: aliceblue;
 }
-
+::selection{
+  background-color: rgba(78, 6, 202, 0.2);
+}
+html::-webkit-scrollbar{
+  display: none;
+}
+html::-webkit-scrollbar-thumb{
+  display: none;
+}
 .gradient {
   height: fit-content;
   z-index: -1;
@@ -45,4 +53,12 @@ html {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   color: transparent;
+}
+
+.transparent-table .ant-table {
+  background-color: transparent;
+}
+
+.transparent-table .ant-table-cell > tr > td {
+  background-color: transparent;
 }
