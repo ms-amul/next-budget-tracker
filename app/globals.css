@@ -54,6 +54,13 @@ html::-webkit-scrollbar-thumb{
   background-clip: text;
   color: transparent;
 }
+.gradient-text-green {
+  background: linear-gradient(to left, rgb(2, 68, 150), rgb(55, 170, 1));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
 
 .transparent-table .ant-table {
   background-color: transparent;

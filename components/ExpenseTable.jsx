@@ -8,6 +8,7 @@ export default function Dashboard() {
   return (
     <div className="transparent-table">
       <Table
+      className="shadow-neumorphic"
         dataSource={expenses}
         columns={[
           { title: "Name", dataIndex: "name", key: "name" },

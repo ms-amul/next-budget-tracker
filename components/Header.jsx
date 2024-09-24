@@ -12,7 +12,7 @@ export default function Header() {
       <div className="flex justify-between items-center p-2">
         <div className="flex items-center text-2xl font-bold gradient-text-red">
           <Image src="/logo.png" width={45} height={45} />
-          Servify
+          Servify <span className="hidden md:block ml-1 gradient-text-green">Your personal finance manager</span>
         </div>
         {status === "authenticated" ? (
           <div className="flex items-center">

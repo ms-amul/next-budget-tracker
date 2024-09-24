@@ -1,27 +1,16 @@
-"use client"
-import React, { useState } from "react";
-import { Modal } from "antd";
-import { useSession } from "next-auth/react";
+"use client";
 import NeumorphicCard from "@/components/QuickCards";
 import ExpenseTable from "@/components/ExpenseTable";
-import { GiWallet } from "react-icons/gi";
+import { Modal } from "antd";
+import { useEffect, useState } from "react";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
-import { GiExpense } from "react-icons/gi";
-import {Spin} from "antd";
+import { GiExpense, GiWallet } from "react-icons/gi";
+import {Spin} from "antd"
+import { useSession } from "next-auth/react";
+import Link from "next/link";
 export default function Dashboard() {
+
   const { data: session, status } = useSession();
-  const [selectedCard, setSelectedCard] = useState(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const handleCardClick = (cardType) => {
-    setSelectedCard(cardType);
-    setIsModalVisible(true);
-  };
-
-  const handleModalClose = () => {
-    setIsModalVisible(false);
-    setSelectedCard(null);
-  };
 
   if (status === "loading") {
     return (
@@ -41,45 +30,125 @@ export default function Dashboard() {
     );
   }
 
+  const [budgets, setBudgets] = useState([]);
+  const [incomes, setIncomes] = useState([]);
+  const [expenses, setExpenses] = useState([]);
+  const [monthlyTotals, setMonthlyTotals] = useState({
+    totalBudget: 0,
+    totalIncome: 0,
+    totalExpenses: 0,
+  });
+
+  // Modal State
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalType, setModalType] = useState("");
+
+  // Open Modal function
+  const handleOpenModal = (type) => {
+    setModalType(type);
+    setIsModalVisible(true);
+  };
+
+  // Close Modal function
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
+
+  // Function to fetch the data from APIs
+  const fetchData = async () => {
+    try {
+      const [budgetRes, incomeRes, expenseRes] = await Promise.all([
+        fetch("/api/budget"),
+        fetch("/api/income"),
+        fetch("/api/expense"),
+      ]);
+
+      const budgetsData = await budgetRes.json();
+      const incomesData = await incomeRes.json();
+      const expensesData = await expenseRes.json();
+
+      setBudgets(budgetsData);
+      setIncomes(incomesData);
+      setExpenses(expensesData);
+
+      // Calculate monthly totals
+      const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear();
+
+      const isCurrentMonth = (dateString) => {
+        const date = new Date(dateString);
+        return (
+          date.getMonth() === currentMonth && date.getFullYear() === currentYear
+        );
+      };
+
+      const totalBudget = budgetsData.reduce(
+        (acc, budget) => acc + budget.limit,
+        0
+      );
+      const totalIncome = incomesData.reduce(
+        (acc, income) =>
+          isCurrentMonth(income.createdAt) ? acc + income.amount : acc,
+        0
+      );
+      const totalExpenses = expensesData.reduce(
+        (acc, expense) =>
+          isCurrentMonth(expense.createdAt) ? acc + expense.amount : acc,
+        0
+      );
+
+      setMonthlyTotals({ totalBudget, totalIncome, totalExpenses });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <div className="p-4">
-      <p className="gradient-text-blue text-lg md:text-2xl font-semibold">
+      <h1 className="gradient-text-blue text-lg md:text-2xl font-semibold">
         Hello 👋 {session?.user?.name}, track all your expenses, budget and
         incomes...
-      </p>
+      </h1>
+
+      {/* Display Neumorphic Cards with Monthly Totals */}
       <div className="flex flex-wrap justify-center">
         <NeumorphicCard
           title="Budget"
-          amount="₹5000"
+          amount={`₹${monthlyTotals.totalBudget}`}
           icon={<GiWallet />}
-          onEyeClick={() => handleCardClick("Budget")}
+          onEyeClick={() => handleOpenModal("budget")}
         />
         <NeumorphicCard
           title="Income"
-          amount="₹7000"
+          amount={`₹${monthlyTotals.totalIncome}`}
           icon={<FaMoneyBillTrendUp />}
-          onEyeClick={() => handleCardClick("Income")}
+          onEyeClick={() => handleOpenModal("income")}
         />
         <NeumorphicCard
           title="Expenses"
-          amount="₹3000"
+          amount={`₹${monthlyTotals.totalExpenses}`}
           icon={<GiExpense />}
-          onEyeClick={() => handleCardClick("Expenses")}
+          onEyeClick={() => handleOpenModal("expense")}
         />
       </div>
 
       <ExpenseTable/>
 
-      {/* Modal for displaying selected card details */}
+      {/* Modal to display details */}
       <Modal
-        title={`Details for ${selectedCard}`}
+        title={`Details for ${modalType}`}
         visible={isModalVisible}
-        onCancel={handleModalClose}
+        onCancel={handleCloseModal}
         footer={null}
       >
-        {selectedCard === "Budget" && <p>Here are the details of your budget...</p>}
-        {selectedCard === "Income" && <p>Here are the details of your income sources...</p>}
-        {selectedCard === "Expenses" && <p>Here are the details of your expenses...</p>}
+        {/* Render the content based on modal type */}
+        {modalType === "budget" && <p>Budget Details go here...</p>}
+        {modalType === "income" && <p>Income Details go here...</p>}
+        {modalType === "expense" && <p>Expense Details go here...</p>}
       </Modal>
     </div>
   );
