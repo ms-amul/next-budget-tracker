@@ -5,14 +5,19 @@ import { getServerSession } from "next-auth/next";
 
 // POST method to create a new expense
 export async function POST(req) {
+
   await connectMongo();
   const session = await getServerSession(req);
+
+  console.log(session);
 
   if (!session) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   const { name, amount, budgetId } = await req.json();
+
+  console.log(name, session.user.id);
 
   try {
     const newExpense = await Expense.create({
@@ -23,6 +28,7 @@ export async function POST(req) {
     });
     return NextResponse.json(newExpense, { status: 201 });
   } catch (error) {
+    console.log(error.message);
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 }

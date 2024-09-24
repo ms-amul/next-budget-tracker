@@ -5,30 +5,14 @@ import { Modal } from "antd";
 import { useEffect, useState } from "react";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { GiExpense, GiWallet } from "react-icons/gi";
-import {Spin} from "antd"
+import { Spin } from "antd";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import Budget from "@/components/Budget";
+import Income from "@/components/Income";
+import Expense from "@/components/Expense";
 export default function Dashboard() {
-
   const { data: session, status } = useSession();
-
-  if (status === "loading") {
-    return (
-      <div className="flex flex-col scale-150 h-screen w-screen fixed items-center justify-center gap-3">
-        <Spin size="large"></Spin>
-        <p>Loading your data!</p>
-      </div>
-    );
-  }
-
-  if (status === "unauthenticated") {
-    return (
-      <div className="text-center">
-        <p>You are not signed in. Please sign in to access the dashboard.</p>
-        <Link href="/">Back to Home</Link>
-      </div>
-    );
-  }
 
   const [budgets, setBudgets] = useState([]);
   const [incomes, setIncomes] = useState([]);
@@ -67,6 +51,8 @@ export default function Dashboard() {
       const incomesData = await incomeRes.json();
       const expensesData = await expenseRes.json();
 
+      console.log(budgetsData);
+
       setBudgets(budgetsData);
       setIncomes(incomesData);
       setExpenses(expensesData);
@@ -103,9 +89,34 @@ export default function Dashboard() {
     }
   };
 
+  const getBudgetCategoriesForDropdown = () => {
+    return budgets.map((budget) => ({
+      category: budget.category,
+      _id: budget._id,
+    }));
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
+
+  if (status === "loading") {
+    return (
+      <div className="flex flex-col scale-150 h-screen w-screen fixed items-center justify-center gap-3">
+        <Spin size="large"></Spin>
+        <p>Loading your data!</p>
+      </div>
+    );
+  }
+
+  if (status === "unauthenticated") {
+    return (
+      <div className="text-center">
+        <p>You are not signed in. Please sign in to access the dashboard.</p>
+        <Link href="/">Back to Home</Link>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4">
@@ -136,19 +147,21 @@ export default function Dashboard() {
         />
       </div>
 
-      <ExpenseTable/>
+      <ExpenseTable />
 
       {/* Modal to display details */}
       <Modal
-        title={`Details for ${modalType}`}
+        title={null}
         visible={isModalVisible}
         onCancel={handleCloseModal}
         footer={null}
       >
         {/* Render the content based on modal type */}
-        {modalType === "budget" && <p>Budget Details go here...</p>}
-        {modalType === "income" && <p>Income Details go here...</p>}
-        {modalType === "expense" && <p>Expense Details go here...</p>}
+        {modalType === "budget" && <Budget budget={budgets} />}
+        {modalType === "income" && <Income income={incomes} />}
+        {modalType === "expense" && (
+          <Expense getCategories={getBudgetCategoriesForDropdown} />
+        )}
       </Modal>
     </div>
   );

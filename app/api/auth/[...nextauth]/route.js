@@ -2,7 +2,7 @@ import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import connectMongo from '@/lib/mongo';
 import User from '@/models/User';
-console.log(process.env.GOOGLE_CLIENT_ID);
+
 const handler = NextAuth({
   providers: [
     GoogleProvider({
@@ -13,8 +13,9 @@ const handler = NextAuth({
   callbacks: {
     async session({ session, token }) {
       await connectMongo();
+      console.log(session);
       const user = await User.findOne({ email: session.user.email });
-      session.userId = user ? user._id.toString() : null;
+      token = user ? user._id.toString() : null;
       return session;
     },
     async signIn({ profile }) {
