@@ -1,34 +1,37 @@
 "use client";
-import { useSession, signOut } from "next-auth/react";
-import { useState, useEffect } from "react";
-import BudgetChart from "@/components/BudgetChart";
-import ExpensesChart from "@/components/ExpensesChart";
-import IncomeChart from "@/components/IncomeChart";
-import IncomeTable from "@/components/IncomeTable";
+import BudgetCard from "@/components/BudgetCard"; // New Budget Card component
+import CurrentBalanceCard from "@/components/CurrentBalanceCard"; // New Current Balance Card component
 import ExpenseTable from "@/components/ExpensesTable";
-import BudgetTable from "@/components/BudgetTable";
+import IncomeCarousel from "@/components/IncomeCarousel"; // New Income Carousel component
+import Modal from "@/components/Modal";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { FaPlus } from "react-icons/fa"; // Example icon from react-icons
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
-  const [incomes, setIncomes] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [budgets, setBudgets] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState("");
+
+  const fetchData = async () => {
+    try {
+      const resExpense = await fetch("/api/expense");
+      const resBudget = await fetch("/api/budget");
+
+      const expensesData = await resExpense.json();
+      const budgetsData = await resBudget.json();
+
+      setExpenses(expensesData);
+      setBudgets(budgetsData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const resIncome = await fetch("/api/income");
-        const resExpense = await fetch("/api/expense");
-        const resBudget = await fetch("/api/budget");
-
-        setIncomes(await resIncome.json());
-        setExpenses(await resExpense.json());
-        setBudgets(await resBudget.json());
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
     fetchData();
   }, []);
 
@@ -45,6 +48,13 @@ export default function Dashboard() {
     );
   }
 
+  const handleOpenModal = (type) => {
+    setModalType(type);
+    setShowModal(true);
+  };
+
+  const currentBalance = 1000; // Hardcoded current balance
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="flex justify-between items-center mb-8">
@@ -60,34 +70,27 @@ export default function Dashboard() {
           </button>
         </div>
       </div>
-
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-        <div>
-          <BudgetChart budgets={budgets} />
-        </div>
-        <div>
-          <IncomeChart incomes={incomes} />
-        </div>
-        <div className="col-span-2">
-          <ExpensesChart expenses={expenses} />
-        </div>
-      </div> */}
-
-      <h2 className="text-2xl font-bold mb-4">Tables</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-xl font-semibold mb-2">Income Table</h3>
-          <IncomeTable incomes={incomes} />
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-xl font-semibold mb-2">Expenses Table</h3>
-          <ExpenseTable expenses={expenses} />
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-xl font-semibold mb-2">Budget Table</h3>
-          <BudgetTable budgets={budgets} />
-        </div>
+      {/* Budget and Current Balance Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <BudgetCard budgets={budgets} onOpenModal={handleOpenModal} />
+        <CurrentBalanceCard balance={currentBalance} />
       </div>
+      {/* Income Carousel */}
+      <h2 className="text-2xl font-bold mb-4">Income Sources</h2>
+      <IncomeCarousel /> {/* Display income sources horizontally */}
+      {/* Expense Table */}
+      <h2 className="text-2xl font-bold mb-4">Expenses</h2>
+      <div className="bg-white p-4 rounded-lg shadow">
+        <ExpenseTable expenses={expenses} />
+      </div>
+      {/* Modal for Adding Items */}
+      {showModal && (
+        <Modal
+          type={modalType}
+          onClose={() => setShowModal(false)}
+          refreshData={fetchData}
+        />
+      )}
     </div>
   );
 }

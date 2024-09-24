@@ -1,26 +1,34 @@
-'use client';
-import { Table } from 'antd';
+"use client";
+import { Table } from "antd";
 
 export default function BudgetTable({ budgets }) {
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: "Category",
+      dataIndex: "category",
+      key: "category",
     },
     {
-      title: 'Amount',
-      dataIndex: 'amount',
-      key: 'amount',
+      title: "Limit",
+      dataIndex: "limit",
+      key: "limit",
       render: (text) => `$${text.toFixed(2)}`,
     },
     {
-      title: 'Remaining',
-      dataIndex: 'remaining',
-      key: 'remaining',
+      title: "Spent",
+      dataIndex: "spent",
+      key: "spent",
       render: (text) => `$${text.toFixed(2)}`,
+    },
+    {
+      title: "Remaining",
+      key: "remaining",
+      render: (_, record) => {
+        const remaining = record.limit - record.spent;
+        return `$${remaining.toFixed(2)}`;
+      },
     },
   ];
 
-  return <Table dataSource={budgets} columns={columns} rowKey="id" />;
+  return <Table dataSource={budgets} columns={columns} rowKey="_id" />;
 }
