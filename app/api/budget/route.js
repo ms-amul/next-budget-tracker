@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongo";
 import Budget from "@/models/Budget";
 import { getServerSession } from "next-auth/next";
+import User from "@/models/User";
 
 // POST method to create a new budget
 export async function POST(req) {
@@ -37,7 +38,8 @@ export async function GET(req) {
   }
 
   try {
-    const budgets = await Budget.find({ createdBy: session.user.id });
+    const user = await User.findOne({ email: session.user.email });
+    const budgets = await Budget.find({ createdBy: user._id });
     return NextResponse.json(budgets, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });

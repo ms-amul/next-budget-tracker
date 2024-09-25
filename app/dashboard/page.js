@@ -51,7 +51,7 @@ export default function Dashboard() {
       const incomesData = await incomeRes.json();
       const expensesData = await expenseRes.json();
 
-      console.log(budgetsData);
+      console.log(expensesData);
 
       setBudgets(budgetsData);
       setIncomes(incomesData);
@@ -147,7 +147,7 @@ export default function Dashboard() {
         />
       </div>
 
-      <ExpenseTable />
+      <ExpenseTable expenses={expenses} getCategories={getBudgetCategoriesForDropdown} />
 
       {/* Modal to display details */}
       <Modal

@@ -2,14 +2,12 @@ import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongo";
 import Expense from "@/models/Expense";
 import { getServerSession } from "next-auth/next";
+import User from "@/models/User";
 
 // POST method to create a new expense
 export async function POST(req) {
-
   await connectMongo();
   const session = await getServerSession(req);
-
-  console.log(session);
 
   if (!session) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -17,14 +15,14 @@ export async function POST(req) {
 
   const { name, amount, budgetId } = await req.json();
 
-  console.log(name, session.user.id);
+  const user = await User.findOne({ email: session.user.email });
 
   try {
     const newExpense = await Expense.create({
       name,
       amount,
       budgetId,
-      createdBy: session.user.id,
+      createdBy: user._id,
     });
     return NextResponse.json(newExpense, { status: 201 });
   } catch (error) {
@@ -43,7 +41,8 @@ export async function GET(req) {
   }
 
   try {
-    const expenses = await Expense.find({ createdBy: session.user.id });
+    const user = await User.findOne({ email: session.user.email });
+    const expenses = await Expense.find({ createdBy: user._id }).populate('budgetId');
     return NextResponse.json(expenses, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });

@@ -61,11 +61,3 @@ html::-webkit-scrollbar-thumb{
   background-clip: text;
   color: transparent;
 }
-
-.transparent-table .ant-table {
-  background-color: transparent;
-}
-
-.transparent-table .ant-table-cell > tr > td {
-  background-color: transparent;
-}

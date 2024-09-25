@@ -17,11 +17,9 @@ export default function Header() {
         {status === "authenticated" ? (
           <div className="flex items-center">
             <img
-              width={45}
-              height={45}
               src={session?.user?.image}
               alt={session?.user?.name}
-              className="rounded-full border-2 p-[1px] hover:p-0 transition-all duration-200 border-red-400"
+              className="w-12 h-12 rounded-full border-2 p-[1px] hover:p-0 transition-all duration-200 border-red-400"
             />
             <Button
               size="large"
