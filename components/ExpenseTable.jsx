@@ -7,19 +7,10 @@ const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 export default function Dashboard({ expenses, getCategories }) {
+  
   const [filteredExpenses, setFilteredExpenses] = useState(expenses);
-  const [categories, setCategories] = useState([]);
   const [selectedDateRange, setSelectedDateRange] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
-
-  // Fetch categories on component mount
-  useEffect(() => {
-    async function fetchCategories() {
-      const fetchedCategories = await getCategories();
-      setCategories(fetchedCategories);
-    }
-    fetchCategories();
-  }, []);
 
   // Date filter logic
   const handleDateFilter = (dates) => {
@@ -94,7 +85,7 @@ export default function Dashboard({ expenses, getCategories }) {
                   value={selectedCategory}
                   allowClear
                 >
-                  {categories.map((category) => (
+                  {getCategories().map((category) => (
                     <Option key={category._id} value={category._id}>
                       {category.icon ? category.icon : <FaWallet />}{" "}
                       {category.category}
