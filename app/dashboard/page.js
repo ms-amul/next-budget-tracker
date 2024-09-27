@@ -11,6 +11,11 @@ import Link from "next/link";
 import Budget from "@/components/Budget";
 import Income from "@/components/Income";
 import Expense from "@/components/Expense";
+import {
+  RiMoneyDollarCircleFill,
+  RiEdit2Line,
+  RiDeleteBinLine,
+} from "react-icons/ri";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -134,7 +139,8 @@ export default function Dashboard() {
   return (
     <div className="p-4">
       <h1 className="gradient-text-blue text-lg md:text-2xl font-semibold">
-        Hello 👋 {session?.user?.name}, track all your expenses, budget and incomes...
+        Hello 👋 {session?.user?.name}, track all your expenses, budget and
+        incomes...
       </h1>
 
       <div className="flex flex-wrap justify-center">
@@ -145,7 +151,7 @@ export default function Dashboard() {
           icon={<GiWallet />}
           onEyeClick={() => handleOpenDrawer("budget")}
         />
-        
+
         {/* Income Card */}
         <NeumorphicCard
           title="Income"
@@ -189,17 +195,96 @@ export default function Dashboard() {
         {drawerType === "budget" && (
           <div>
             {budgets.map((budget) => (
-              <div key={budget._id} className="p-2 bg-gray-100 rounded my-2">
-                <p>{budget.name}: ₹{budget.amount}</p>
+              <div
+                key={budget._id}
+                className="p-4 bg-white rounded-lg shadow-md my-4 hover:shadow-lg transition-shadow duration-300"
+              >
+                <div className="flex items-center mb-4">
+                  <div className="w-8 h-8 mr-3 flex items-center justify-center bg-gray-200 rounded-full">
+                    {budget.icon ? (
+                      <span className="text-2xl rounded-full">
+                        {budget.icon}
+                      </span>
+                    ) : (
+                      <i className="text-gray-500 text-xl">
+                        <RiMoneyDollarCircleFill />
+                      </i>
+                    )}
+                  </div>
+                  <div className="flex justify-between w-full">
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      {budget.name}
+                    </h3>
+                    <span className="text-gray-600 font-medium">
+                      ₹{budget.amount}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex justify-end space-x-4">
+                  <button className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-300">
+                    <i className="text-lg">
+                      <RiEdit2Line /> {/* React Icon for Edit */}
+                    </i>
+                  </button>
+                  <button className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition duration-300">
+                    <i className="text-lg">
+                      <RiDeleteBinLine />
+                    </i>
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         )}
+
         {drawerType === "income" && (
           <div>
             {incomes.map((income) => (
-              <div key={income._id} className="p-2 bg-gray-100 rounded my-2">
-                <p>{income.name}: ₹{income.amount}</p>
+              <div
+                key={income._id}
+                className="p-4 bg-white rounded-lg shadow-md my-4 hover:shadow-lg transition-shadow duration-300"
+              >
+                {/* Income Info */}
+                <div className="flex items-center mb-4">
+                  {/* Income Icon */}
+                  <div className="w-8 h-8 mr-3 flex items-center justify-center bg-gray-200 rounded-full">
+                    {income.icon ? (
+                      <span
+                        className="text-2xl rounded-full"
+                      >{income.icon}</span>
+                    ) : (
+                      <i className="text-gray-500 text-xl">
+                        {" "}
+                        {/* Default Icon */}
+                        <RiMoneyDollarCircleFill />
+                      </i>
+                    )}
+                  </div>
+
+                  {/* Income Name and Amount */}
+                  <div className="flex justify-between w-full">
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      {income.name}
+                    </h3>
+                    <span className="text-gray-600 font-medium">
+                      ₹{income.amount}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Icons at Bottom */}
+                <div className="flex justify-end space-x-4">
+                  <button className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-300">
+                    <i className="text-lg">
+                      <RiEdit2Line /> {/* React Icon for Edit */}
+                    </i>
+                  </button>
+                  <button className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition duration-300">
+                    <i className="text-lg">
+                      <RiDeleteBinLine /> {/* React Icon for Delete */}
+                    </i>
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -208,7 +293,13 @@ export default function Dashboard() {
 
       {/* Modal for adding Budget, Income, or Expense */}
       <Modal
-        title={modalType === "budget" ? "Add Budget" : modalType === "income" ? "Add Income" : "Add Expense"}
+        title={
+          modalType === "budget"
+            ? "Add Budget"
+            : modalType === "income"
+            ? "Add Income"
+            : "Add Expense"
+        }
         visible={isModalVisible}
         onCancel={handleCloseModal}
         footer={null}

@@ -41,7 +41,8 @@ export async function GET(req) {
   try {
     const user = await User.findOne({ email: session.user.email });
     const budgets = await Budget.find({ createdBy: user._id });
-    console.log(budgets);
+    // // Repeat the budgets array 100 times
+    // let repeatedBudgets = Array(100).fill(budgets).flat();
     return NextResponse.json(budgets, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
