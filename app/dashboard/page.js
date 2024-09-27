@@ -1,7 +1,7 @@
 "use client";
 import NeumorphicCard from "@/components/QuickCards";
 import ExpenseTable from "@/components/ExpenseTable";
-import { Modal } from "antd";
+import { Modal, Drawer, Button } from "antd";
 import { useEffect, useState } from "react";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { GiExpense, GiWallet } from "react-icons/gi";
@@ -11,6 +11,7 @@ import Link from "next/link";
 import Budget from "@/components/Budget";
 import Income from "@/components/Income";
 import Expense from "@/components/Expense";
+
 export default function Dashboard() {
   const { data: session, status } = useSession();
 
@@ -23,22 +24,35 @@ export default function Dashboard() {
     totalExpenses: 0,
   });
 
-  // Modal State
+  // State for Drawers and Modal
+  const [isDrawerVisible, setIsDrawerVisible] = useState(false);
+  const [drawerType, setDrawerType] = useState(""); // Determines if it's 'budget' or 'income'
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [modalType, setModalType] = useState("");
+  const [modalType, setModalType] = useState(""); // For the modal to know what to display
 
-  // Open Modal function
+  // Open Drawer
+  const handleOpenDrawer = (type) => {
+    setDrawerType(type);
+    setIsDrawerVisible(true);
+  };
+
+  // Close Drawer
+  const handleCloseDrawer = () => {
+    setIsDrawerVisible(false);
+  };
+
+  // Open Modal from Drawer
   const handleOpenModal = (type) => {
     setModalType(type);
     setIsModalVisible(true);
   };
 
-  // Close Modal function
+  // Close Modal
   const handleCloseModal = () => {
     setIsModalVisible(false);
   };
 
-  // Function to fetch the data from APIs
+  // Fetch Data from APIs
   const fetchData = async () => {
     try {
       const [budgetRes, incomeRes, expenseRes] = await Promise.all([
@@ -50,8 +64,6 @@ export default function Dashboard() {
       const budgetsData = await budgetRes.json();
       const incomesData = await incomeRes.json();
       const expensesData = await expenseRes.json();
-
-      console.log(expensesData);
 
       setBudgets(budgetsData);
       setIncomes(incomesData);
@@ -93,7 +105,7 @@ export default function Dashboard() {
     return budgets.map((budget) => ({
       name: budget.name,
       _id: budget._id,
-      icon: budget.icon
+      icon: budget.icon,
     }));
   };
 
@@ -122,24 +134,27 @@ export default function Dashboard() {
   return (
     <div className="p-4">
       <h1 className="gradient-text-blue text-lg md:text-2xl font-semibold">
-        Hello 👋 {session?.user?.name}, track all your expenses, budget and
-        incomes...
+        Hello 👋 {session?.user?.name}, track all your expenses, budget and incomes...
       </h1>
 
-      {/* Display Neumorphic Cards with Monthly Totals */}
       <div className="flex flex-wrap justify-center">
+        {/* Budget Card */}
         <NeumorphicCard
           title="Budget"
           amount={`₹${monthlyTotals.totalBudget}`}
           icon={<GiWallet />}
-          onEyeClick={() => handleOpenModal("budget")}
+          onEyeClick={() => handleOpenDrawer("budget")}
         />
+        
+        {/* Income Card */}
         <NeumorphicCard
           title="Income"
           amount={`₹${monthlyTotals.totalIncome}`}
           icon={<FaMoneyBillTrendUp />}
-          onEyeClick={() => handleOpenModal("income")}
+          onEyeClick={() => handleOpenDrawer("income")}
         />
+
+        {/* Expenses Card */}
         <NeumorphicCard
           title="Expenses"
           amount={`₹${monthlyTotals.totalExpenses}`}
@@ -153,14 +168,51 @@ export default function Dashboard() {
         getCategories={getBudgetCategoriesForDropdown}
       />
 
-      {/* Modal to display details */}
+      {/* Drawer for Budget and Income */}
+      <Drawer
+        title={drawerType === "budget" ? "Budgets" : "Incomes"}
+        placement="right"
+        onClose={handleCloseDrawer}
+        visible={isDrawerVisible}
+        width={400}
+      >
+        {/* Button to add Budget or Income */}
+        <Button
+          type="primary"
+          className="mb-4"
+          onClick={() => handleOpenModal(drawerType)}
+        >
+          Add {drawerType === "budget" ? "Budget" : "Income"}
+        </Button>
+
+        {/* List of Budgets or Incomes */}
+        {drawerType === "budget" && (
+          <div>
+            {budgets.map((budget) => (
+              <div key={budget._id} className="p-2 bg-gray-100 rounded my-2">
+                <p>{budget.name}: ₹{budget.amount}</p>
+              </div>
+            ))}
+          </div>
+        )}
+        {drawerType === "income" && (
+          <div>
+            {incomes.map((income) => (
+              <div key={income._id} className="p-2 bg-gray-100 rounded my-2">
+                <p>{income.name}: ₹{income.amount}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </Drawer>
+
+      {/* Modal for adding Budget, Income, or Expense */}
       <Modal
-        title={null}
+        title={modalType === "budget" ? "Add Budget" : modalType === "income" ? "Add Income" : "Add Expense"}
         visible={isModalVisible}
         onCancel={handleCloseModal}
         footer={null}
       >
-        {/* Render the content based on modal type */}
         {modalType === "budget" && <Budget budget={budgets} />}
         {modalType === "income" && <Income income={incomes} />}
         {modalType === "expense" && (
