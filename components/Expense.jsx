@@ -66,7 +66,9 @@ export default function Expense({ getCategories }) {
         <Form.Item
           label="Expense Name"
           name="name"
-          rules={[{ required: true, message: "Please input the expense name!" }]}
+          rules={[
+            { required: true, message: "Please input the expense name!" },
+          ]}
         >
           <Input placeholder="Enter expense name" />
         </Form.Item>
@@ -77,11 +79,7 @@ export default function Expense({ getCategories }) {
           name="amount"
           rules={[{ required: true, message: "Please input the amount!" }]}
         >
-          <Input
-            type="number"
-            placeholder="Enter amount"
-            prefix="₹"
-          />
+          <Input type="number" placeholder="Enter amount" prefix="₹" />
         </Form.Item>
 
         {/* Budget Category Dropdown */}
@@ -93,7 +91,7 @@ export default function Expense({ getCategories }) {
           <Select placeholder="Select budget category">
             {categories.map((category) => (
               <Select.Option key={category._id} value={category._id}>
-                {category.category}
+                {category.icon + " " + category.name}
               </Select.Option>
             ))}
           </Select>

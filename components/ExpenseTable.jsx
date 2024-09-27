@@ -86,9 +86,9 @@ export default function Dashboard({ expenses, getCategories }) {
                   allowClear
                 >
                   {getCategories().map((category) => (
-                    <Option key={category._id} value={category._id}>
+                    <Option key={category._id} value={category._id} className="flex items-center">
                       {category.icon ? category.icon : <FaWallet />}{" "}
-                      {category.category}
+                      {category.name}
                     </Option>
                   ))}
                 </Select>
@@ -100,7 +100,7 @@ export default function Dashboard({ expenses, getCategories }) {
               <div className="flex items-center space-x-2">
                 {budgetId.icon ? budgetId.icon : <FaWallet />}{" "}
                 {/* Render icon */}
-                <span>{budgetId.category}</span>
+                <span>{budgetId.name}</span>
               </div>
             ),
           },

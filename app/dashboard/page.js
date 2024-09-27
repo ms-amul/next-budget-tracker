@@ -69,7 +69,7 @@ export default function Dashboard() {
       };
 
       const totalBudget = budgetsData.reduce(
-        (acc, budget) => acc + budget.limit,
+        (acc, budget) => acc + budget.amount,
         0
       );
       const totalIncome = incomesData.reduce(
@@ -91,8 +91,9 @@ export default function Dashboard() {
 
   const getBudgetCategoriesForDropdown = () => {
     return budgets.map((budget) => ({
-      category: budget.category,
+      name: budget.name,
       _id: budget._id,
+      icon: budget.icon
     }));
   };
 
@@ -147,7 +148,10 @@ export default function Dashboard() {
         />
       </div>
 
-      <ExpenseTable expenses={expenses} getCategories={getBudgetCategoriesForDropdown} />
+      <ExpenseTable
+        expenses={expenses}
+        getCategories={getBudgetCategoriesForDropdown}
+      />
 
       {/* Modal to display details */}
       <Modal

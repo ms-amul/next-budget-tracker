@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongo";
 import Income from "@/models/Income";
 import { getServerSession } from "next-auth/next";
+import User from "@/models/User";
 
 // POST method to create a new income
 export async function POST(req) {
@@ -15,11 +16,12 @@ export async function POST(req) {
   const { name, amount, icon } = await req.json();
 
   try {
+    const user = await User.findOne({ email: session.user.email });
     const newIncome = await Income.create({
       name,
       amount,
       icon,
-      createdBy: session.user.id,
+      createdBy: user._id,
     });
     return NextResponse.json(newIncome, { status: 201 });
   } catch (error) {
@@ -37,7 +39,8 @@ export async function GET(req) {
   }
 
   try {
-    const incomes = await Income.find({ createdBy: session.user.id });
+    const user = await User.findOne({ email: session.user.email });
+    const incomes = await Income.find({ createdBy: user._id });
     return NextResponse.json(incomes, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });

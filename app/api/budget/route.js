@@ -16,11 +16,12 @@ export async function POST(req) {
   const { name, amount, icon } = await req.json();
 
   try {
+    const user = await User.findOne({ email: session.user.email });
     const newBudget = await Budget.create({
       name,
       amount,
       icon,
-      createdBy: session.user.id,
+      createdBy: user._id,
     });
     return NextResponse.json(newBudget, { status: 201 });
   } catch (error) {
@@ -39,7 +40,8 @@ export async function GET(req) {
 
   try {
     const user = await User.findOne({ email: session.user.email });
-    const budgets = await Budget.find({ userId: user._id });
+    const budgets = await Budget.find({ createdBy: user._id });
+    console.log(budgets);
     return NextResponse.json(budgets, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
