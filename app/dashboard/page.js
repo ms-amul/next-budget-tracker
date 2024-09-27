@@ -8,14 +8,9 @@ import { GiExpense, GiWallet } from "react-icons/gi";
 import { Spin } from "antd";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import Budget from "@/components/Budget";
-import Income from "@/components/Income";
+import BudgetCard from "@/components/BudgetCard"; // New component
+import IncomeCard from "@/components/IncomeCard"; // New component
 import Expense from "@/components/Expense";
-import {
-  RiMoneyDollarCircleFill,
-  RiEdit2Line,
-  RiDeleteBinLine,
-} from "react-icons/ri";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -31,33 +26,28 @@ export default function Dashboard() {
 
   // State for Drawers and Modal
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
-  const [drawerType, setDrawerType] = useState(""); // Determines if it's 'budget' or 'income'
+  const [drawerType, setDrawerType] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [modalType, setModalType] = useState(""); // For the modal to know what to display
+  const [modalType, setModalType] = useState("");
 
-  // Open Drawer
   const handleOpenDrawer = (type) => {
     setDrawerType(type);
     setIsDrawerVisible(true);
   };
 
-  // Close Drawer
   const handleCloseDrawer = () => {
     setIsDrawerVisible(false);
   };
 
-  // Open Modal from Drawer
   const handleOpenModal = (type) => {
     setModalType(type);
     setIsModalVisible(true);
   };
 
-  // Close Modal
   const handleCloseModal = () => {
     setIsModalVisible(false);
   };
 
-  // Fetch Data from APIs
   const fetchData = async () => {
     try {
       const [budgetRes, incomeRes, expenseRes] = await Promise.all([
@@ -171,7 +161,7 @@ export default function Dashboard() {
 
       <ExpenseTable
         expenses={expenses}
-        getCategories={getBudgetCategoriesForDropdown}
+        getCategories={getBudgetCategoriesForDropdown} // Pass to ExpenseTable
       />
 
       {/* Drawer for Budget and Income */}
@@ -195,44 +185,7 @@ export default function Dashboard() {
         {drawerType === "budget" && (
           <div>
             {budgets.map((budget) => (
-              <div
-                key={budget._id}
-                className="p-4 bg-white rounded-lg shadow-md my-4 hover:shadow-lg transition-shadow duration-300"
-              >
-                <div className="flex items-center mb-4">
-                  <div className="w-8 h-8 mr-3 flex items-center justify-center bg-gray-200 rounded-full">
-                    {budget.icon ? (
-                      <span className="text-2xl rounded-full">
-                        {budget.icon}
-                      </span>
-                    ) : (
-                      <i className="text-gray-500 text-xl">
-                        <RiMoneyDollarCircleFill />
-                      </i>
-                    )}
-                  </div>
-                  <div className="flex justify-between w-full">
-                    <h3 className="text-lg font-semibold text-gray-800">
-                      {budget.name}
-                    </h3>
-                    <span className="text-gray-600 font-medium">
-                      ₹{budget.amount}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex justify-end space-x-4">
-                  <button className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-300">
-                    <i className="text-lg">
-                      <RiEdit2Line /> {/* React Icon for Edit */}
-                    </i>
-                  </button>
-                  <button className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition duration-300">
-                    <i className="text-lg">
-                      <RiDeleteBinLine />
-                    </i>
-                  </button>
-                </div>
-              </div>
+              <BudgetCard key={budget._id} budget={budget} />
             ))}
           </div>
         )}
@@ -240,52 +193,7 @@ export default function Dashboard() {
         {drawerType === "income" && (
           <div>
             {incomes.map((income) => (
-              <div
-                key={income._id}
-                className="p-4 bg-white rounded-lg shadow-md my-4 hover:shadow-lg transition-shadow duration-300"
-              >
-                {/* Income Info */}
-                <div className="flex items-center mb-4">
-                  {/* Income Icon */}
-                  <div className="w-8 h-8 mr-3 flex items-center justify-center bg-gray-200 rounded-full">
-                    {income.icon ? (
-                      <span
-                        className="text-2xl rounded-full"
-                      >{income.icon}</span>
-                    ) : (
-                      <i className="text-gray-500 text-xl">
-                        {" "}
-                        {/* Default Icon */}
-                        <RiMoneyDollarCircleFill />
-                      </i>
-                    )}
-                  </div>
-
-                  {/* Income Name and Amount */}
-                  <div className="flex justify-between w-full">
-                    <h3 className="text-lg font-semibold text-gray-800">
-                      {income.name}
-                    </h3>
-                    <span className="text-gray-600 font-medium">
-                      ₹{income.amount}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Icons at Bottom */}
-                <div className="flex justify-end space-x-4">
-                  <button className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-300">
-                    <i className="text-lg">
-                      <RiEdit2Line /> {/* React Icon for Edit */}
-                    </i>
-                  </button>
-                  <button className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition duration-300">
-                    <i className="text-lg">
-                      <RiDeleteBinLine /> {/* React Icon for Delete */}
-                    </i>
-                  </button>
-                </div>
-              </div>
+              <IncomeCard key={income._id} income={income} />
             ))}
           </div>
         )}

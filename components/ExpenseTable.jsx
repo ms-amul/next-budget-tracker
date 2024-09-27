@@ -53,7 +53,6 @@ export default function Dashboard({ expenses, getCategories }) {
   return (
     <div className="transparent-table">
       <Table
-        className="shadow-neumorphic"
         dataSource={filteredExpenses}
         columns={[
           { title: "Name", dataIndex: "name", key: "name" },
