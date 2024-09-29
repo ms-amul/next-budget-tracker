@@ -1,6 +1,8 @@
 "use client";
 import NeumorphicCard from "@/components/QuickCards";
 import ExpenseTable from "@/components/ExpenseTable";
+import Budget from "@/components/Budget";
+import Income from "@/components/Income";
 import { Modal, Drawer, Button } from "antd";
 import { useEffect, useState } from "react";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
@@ -161,8 +163,32 @@ export default function Dashboard() {
 
       <ExpenseTable
         expenses={expenses}
-        getCategories={getBudgetCategoriesForDropdown} // Pass to ExpenseTable
+        getCategories={getBudgetCategoriesForDropdown}
       />
+
+      {/* Modal for adding Budget, Income, or Expense */}
+      <Modal
+        title={
+          modalType === "budget"
+            ? "Add Budget"
+            : modalType === "income"
+            ? "Add Income"
+            : "Add Expense"
+        }
+        visible={isModalVisible}
+        onCancel={handleCloseModal}
+        footer={null}
+        className="z-[999]"
+      >
+        {modalType === "budget" && <Budget budget={budgets} />}
+        {modalType === "income" && <Income income={incomes} />}
+        {modalType === "expense" && (
+          <Expense
+            getCategories={getBudgetCategoriesForDropdown}
+            fetchData={fetchData}
+          />
+        )}
+      </Modal>
 
       {/* Drawer for Budget and Income */}
       <Drawer
@@ -181,11 +207,14 @@ export default function Dashboard() {
           Add {drawerType === "budget" ? "Budget" : "Income"}
         </Button>
 
-        {/* List of Budgets or Incomes */}
         {drawerType === "budget" && (
           <div>
             {budgets.map((budget) => (
-              <BudgetCard key={budget._id} budget={budget} />
+              <BudgetCard
+                key={budget._id}
+                budget={budget}
+                fetchData={fetchData}
+              />
             ))}
           </div>
         )}
@@ -193,31 +222,15 @@ export default function Dashboard() {
         {drawerType === "income" && (
           <div>
             {incomes.map((income) => (
-              <IncomeCard key={income._id} income={income} />
+              <IncomeCard
+                key={income._id}
+                income={income}
+                fetchData={fetchData}
+              />
             ))}
           </div>
         )}
       </Drawer>
-
-      {/* Modal for adding Budget, Income, or Expense */}
-      <Modal
-        title={
-          modalType === "budget"
-            ? "Add Budget"
-            : modalType === "income"
-            ? "Add Income"
-            : "Add Expense"
-        }
-        visible={isModalVisible}
-        onCancel={handleCloseModal}
-        footer={null}
-      >
-        {modalType === "budget" && <Budget budget={budgets} />}
-        {modalType === "income" && <Income income={incomes} />}
-        {modalType === "expense" && (
-          <Expense getCategories={getBudgetCategoriesForDropdown} />
-        )}
-      </Modal>
     </div>
   );
 }

@@ -10,8 +10,8 @@ const NeumorphicCard = ({ title, amount, icon, onEyeClick }) => {
         <div className="flex items-center">
           <div className="text-6xl mr-4">{icon}</div>
           <div>
-            <h2 className="text-2xl font-semibold gradient-text-red">{title}</h2>
-            <p className="text-4xl font-bold gradient-text-blue">{amount}</p>
+            <h2 className="text-2xl font-bold gradient-text-red">{title}</h2>
+            <p className="text-3xl font-bold gradient-text-blue">{amount}</p>
           </div>
         </div>
         <FaEye

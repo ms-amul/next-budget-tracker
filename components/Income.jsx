@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 // Dynamically import the EmojiPicker to ensure it's client-side only
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
-export default function IncomeForm() {
+export default function IncomeForm({ fetchData }) {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm(); // To control the form instance
   const [selectedEmoji, setSelectedEmoji] = useState(""); // State to store selected emoji
@@ -47,6 +47,7 @@ export default function IncomeForm() {
         message.success("Income added successfully!"); // Success notification
         form.resetFields(); // Clear form after successful submission
         setSelectedEmoji(""); // Clear emoji selection
+        fetchData(); // Fetch data to update the income list
       } else {
         message.error("Failed to add income. Please try again.");
       }
@@ -74,7 +75,9 @@ export default function IncomeForm() {
         <Form.Item
           label="Income Source"
           name="name"
-          rules={[{ required: true, message: "Please input the income source!" }]}
+          rules={[
+            { required: true, message: "Please input the income source!" },
+          ]}
         >
           <Input placeholder="Enter income source (e.g., Salary)" />
         </Form.Item>

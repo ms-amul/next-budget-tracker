@@ -50,8 +50,14 @@ export default function Dashboard({ expenses, getCategories }) {
     setSelectedCategory(null);
   };
 
+  useEffect(() => {
+    setFilteredExpenses(expenses);
+    setSelectedDateRange(null);
+    setSelectedCategory(null);
+  },[])
+
   return (
-    <div className="transparent-table">
+    <div className="table mx-auto w-[96vw]">
       <Table
         dataSource={filteredExpenses}
         columns={[
@@ -60,7 +66,6 @@ export default function Dashboard({ expenses, getCategories }) {
           {
             title: (
               <div>
-                Date
                 <RangePicker
                   onChange={handleDateFilter}
                   value={selectedDateRange}
@@ -76,7 +81,6 @@ export default function Dashboard({ expenses, getCategories }) {
           {
             title: (
               <div>
-                Budget Category
                 <Select
                   placeholder="Select Category"
                   style={{ width: 150, marginLeft: "10px" }}

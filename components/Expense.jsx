@@ -3,7 +3,7 @@
 import { Form, Input, Button, Select, message } from "antd";
 import { useState, useEffect } from "react";
 
-export default function Expense({ getCategories }) {
+export default function Expense({ getCategories, fetchData }) {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm(); // To control the form instance
@@ -39,6 +39,7 @@ export default function Expense({ getCategories }) {
       if (res.ok) {
         message.success("Expense added successfully!"); // Success notification
         form.resetFields(); // Clear form after successful submission
+        fetchData(); // Refresh the data after adding expense
       } else {
         message.error("Failed to add expense. Please try again.");
       }
