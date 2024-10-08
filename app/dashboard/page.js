@@ -1,18 +1,15 @@
-"use client";
+"use client"
+
 import NeumorphicCard from "@/components/QuickCards";
 import ExpenseTable from "@/components/ExpenseTable";
-import Budget from "@/components/Budget";
-import Income from "@/components/Income";
-import { Modal, Drawer, Button } from "antd";
 import { useEffect, useState } from "react";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { GiExpense, GiWallet } from "react-icons/gi";
 import { Spin } from "antd";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import BudgetCard from "@/components/BudgetCard"; // New component
-import IncomeCard from "@/components/IncomeCard"; // New component
-import Expense from "@/components/Expense";
+import CustomDrawer from "@/components/CustomDrawer";
+import CustomModal from "@/components/CustomModal";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -66,7 +63,6 @@ export default function Dashboard() {
       setIncomes(incomesData);
       setExpenses(expensesData);
 
-      // Calculate monthly totals
       const currentMonth = new Date().getMonth();
       const currentYear = new Date().getFullYear();
 
@@ -78,7 +74,8 @@ export default function Dashboard() {
       };
 
       const totalBudget = budgetsData.reduce(
-        (acc, budget) => acc + budget.amount,
+        (acc, budget) =>
+          isCurrentMonth(budget.createdAt) ? acc + budget.amount : acc,
         0
       );
       const totalIncome = incomesData.reduce(
@@ -166,71 +163,27 @@ export default function Dashboard() {
         getCategories={getBudgetCategoriesForDropdown}
       />
 
-      {/* Modal for adding Budget, Income, or Expense */}
-      <Modal
-        title={
-          modalType === "budget"
-            ? "Add Budget"
-            : modalType === "income"
-            ? "Add Income"
-            : "Add Expense"
-        }
-        visible={isModalVisible}
-        onCancel={handleCloseModal}
-        footer={null}
-        className="z-[999]"
-      >
-        {modalType === "budget" && <Budget budget={budgets} />}
-        {modalType === "income" && <Income income={incomes} />}
-        {modalType === "expense" && (
-          <Expense
-            getCategories={getBudgetCategoriesForDropdown}
-            fetchData={fetchData}
-          />
-        )}
-      </Modal>
+      {/* Custom Modal */}
+      <CustomModal
+        isModalVisible={isModalVisible}
+        modalType={modalType}
+        handleCloseModal={handleCloseModal}
+        budgets={budgets}
+        incomes={incomes}
+        getBudgetCategoriesForDropdown={getBudgetCategoriesForDropdown}
+        fetchData={fetchData}
+      />
 
-      {/* Drawer for Budget and Income */}
-      <Drawer
-        title={drawerType === "budget" ? "Budgets" : "Incomes"}
-        placement="right"
-        onClose={handleCloseDrawer}
-        visible={isDrawerVisible}
-        width={400}
-      >
-        {/* Button to add Budget or Income */}
-        <Button
-          type="primary"
-          className="mb-4"
-          onClick={() => handleOpenModal(drawerType)}
-        >
-          Add {drawerType === "budget" ? "Budget" : "Income"}
-        </Button>
-
-        {drawerType === "budget" && (
-          <div>
-            {budgets.map((budget) => (
-              <BudgetCard
-                key={budget._id}
-                budget={budget}
-                fetchData={fetchData}
-              />
-            ))}
-          </div>
-        )}
-
-        {drawerType === "income" && (
-          <div>
-            {incomes.map((income) => (
-              <IncomeCard
-                key={income._id}
-                income={income}
-                fetchData={fetchData}
-              />
-            ))}
-          </div>
-        )}
-      </Drawer>
+      {/* Custom Drawer */}
+      <CustomDrawer
+        isDrawerVisible={isDrawerVisible}
+        drawerType={drawerType}
+        handleCloseDrawer={handleCloseDrawer}
+        handleOpenModal={handleOpenModal}
+        budgets={budgets}
+        incomes={incomes}
+        fetchData={fetchData}
+      />
     </div>
   );
 }

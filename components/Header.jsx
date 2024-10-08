@@ -8,11 +8,11 @@ export default function Header() {
   const { data: session, status } = useSession();
 
   return (
-    <div className="bg-slate-900 bg-opacity-10 backdrop-blur-md fixed w-full top-0 left-0 z-[999]">
+    <div className="bg-slate-900 bg-opacity-10 backdrop-blur-md fixed w-full top-0 left-0 z-[999] md:px-16">
       <div className="flex justify-between items-center p-2">
         <div className="flex items-center text-2xl font-bold gradient-text-red">
           <Image src="/logo.png" width={45} height={45} />
-          Servify <span className="hidden md:block ml-1 gradient-text-green">Your personal finance manager</span>
+          Servify
         </div>
         {status === "authenticated" ? (
           <div className="flex items-center">

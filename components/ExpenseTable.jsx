@@ -2,12 +2,11 @@
 import { Button, DatePicker, Select, Table } from "antd";
 import { useEffect, useState } from "react";
 import { FaWallet } from "react-icons/fa"; // Default icon if category icon is missing
-
+import { AlertTwoTone } from "@ant-design/icons";
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 export default function Dashboard({ expenses, getCategories }) {
-  
   const [filteredExpenses, setFilteredExpenses] = useState(expenses);
   const [selectedDateRange, setSelectedDateRange] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -54,10 +53,22 @@ export default function Dashboard({ expenses, getCategories }) {
     setFilteredExpenses(expenses);
     setSelectedDateRange(null);
     setSelectedCategory(null);
-  },[])
+  }, []);
 
   return (
-    <div className="table mx-auto w-[96vw]">
+    <div className="table-container mx-auto custom-table">
+      <div className="my-4 text-right">
+        <Button
+          onClick={clearFilters}
+          variant="filled"
+          color="danger"
+          type="dashed"
+        >
+          {" "}
+          <AlertTwoTone />
+          Reset Filters
+        </Button>
+      </div>
       <Table
         dataSource={filteredExpenses}
         columns={[
@@ -89,7 +100,11 @@ export default function Dashboard({ expenses, getCategories }) {
                   allowClear
                 >
                   {getCategories().map((category) => (
-                    <Option key={category._id} value={category._id} className="flex items-center">
+                    <Option
+                      key={category._id}
+                      value={category._id}
+                      className="flex items-center"
+                    >
                       {category.icon ? category.icon : <FaWallet />}{" "}
                       {category.name}
                     </Option>
@@ -121,10 +136,10 @@ export default function Dashboard({ expenses, getCategories }) {
           },
         ]}
         rowKey="_id"
+        // Enable scroll for smaller screens
+        scroll={{ x: "max-content" }}
+        className="shadow-md"
       />
-      <div className="mt-4">
-        <Button onClick={clearFilters}>Reset Filters</Button>
-      </div>
     </div>
   );
 }
