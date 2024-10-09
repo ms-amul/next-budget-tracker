@@ -18,6 +18,9 @@ const CustomDrawer = ({
   // State to handle selected month (default is current month)
   const [selectedMonth, setSelectedMonth] = useState(dayjs());
 
+  // Get the current month
+  const currentMonth = dayjs().startOf("month");
+
   // Helper function to group data by month and year
   const groupByMonth = (data) => {
     return data.reduce((acc, item) => {
@@ -47,6 +50,9 @@ const CustomDrawer = ({
     setSelectedMonth(date);
   };
 
+  // Check if the selected month is the current month
+  const isCurrentMonth = selectedMonth.isSame(currentMonth, "month");
+
   return (
     <Drawer
       title={drawerType === "budget" ? "Budgets" : "Incomes"}
@@ -56,9 +62,16 @@ const CustomDrawer = ({
       width={400}
     >
       <div className="flex justify-between items-center mb-4">
-        <Button type="primary" onClick={() => handleOpenModal(drawerType)}>
-          Add {drawerType === "budget" ? "Budget" : "Income"}
-        </Button>
+        {isCurrentMonth ? (
+          <Button type="primary" onClick={() => handleOpenModal(drawerType)}>
+            Add {drawerType === "budget" ? "Budget" : "Income"}
+          </Button>
+        ) : (
+          <p className="gradient-text-green">
+            Adding new {drawerType === "budget" ? "budgets" : "incomes"} is
+            only allowed in the current month.
+          </p>
+        )}
 
         {/* Month Picker */}
         <MonthPicker
@@ -94,13 +107,15 @@ const CustomDrawer = ({
                   <p className="mb-3 gradient-text-blue">
                     Your Budget for this month is empty.
                   </p>
-                  <Button
-                    type="primary"
-                    shape="round"
-                    onClick={() => handleOpenModal(drawerType)}
-                  >
-                    Add 1st {drawerType === "budget" ? "Budget" : "Income"}
-                  </Button>
+                  {isCurrentMonth && (
+                    <Button
+                      type="primary"
+                      shape="round"
+                      onClick={() => handleOpenModal(drawerType)}
+                    >
+                      Add 1st {drawerType === "budget" ? "Budget" : "Income"}
+                    </Button>
+                  )}
                 </>
               }
             />
@@ -125,13 +140,15 @@ const CustomDrawer = ({
                   <p className="mb-3 gradient-text-blue">
                     Your Income for this month is empty.
                   </p>
-                  <Button
-                    type="primary"
-                    shape="round"
-                    onClick={() => handleOpenModal(drawerType)}
-                  >
-                    Add 1st {drawerType === "budget" ? "Budget" : "Income"}
-                  </Button>
+                  {isCurrentMonth && (
+                    <Button
+                      type="primary"
+                      shape="round"
+                      onClick={() => handleOpenModal(drawerType)}
+                    >
+                      Add 1st {drawerType === "budget" ? "Budget" : "Income"}
+                    </Button>
+                  )}
                 </>
               }
             />

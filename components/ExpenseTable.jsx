@@ -1,31 +1,40 @@
 "use client";
-import { Button, DatePicker, Select, Table } from "antd";
+import { Button, DatePicker, Empty, Select, Table } from "antd";
 import { useEffect, useState } from "react";
 import { FaWallet } from "react-icons/fa"; // Default icon if category icon is missing
 import { AlertTwoTone } from "@ant-design/icons";
-const { RangePicker } = DatePicker;
+import dayjs from "dayjs"; // Assuming dayjs is installed for date handling
+
+const { MonthPicker } = DatePicker;
 const { Option } = Select;
 
-export default function Dashboard({ expenses, getCategories }) {
-  const [filteredExpenses, setFilteredExpenses] = useState(expenses);
-  const [selectedDateRange, setSelectedDateRange] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+export default function Dashboard({ expenses, getCategories, addExpense }) {
+  const currentMonth = dayjs().startOf("month");
 
-  // Date filter logic
-  const handleDateFilter = (dates) => {
-    if (!dates) {
+  const [filteredExpenses, setFilteredExpenses] = useState(expenses);
+  const [selectedMonth, setSelectedMonth] = useState(dayjs()); // Default to current month
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const isCurrentMonth = selectedMonth.isSame(currentMonth, "month");
+
+  // Helper function to filter expenses by selected month
+  const filterByMonth = (month) => {
+    if (!month) {
       setFilteredExpenses(expenses);
       return;
     }
 
-    const [start, end] = dates;
     const filtered = expenses.filter(
       (expense) =>
-        new Date(expense.createdAt) >= start &&
-        new Date(expense.createdAt) <= end
+        dayjs(expense.createdAt).format("MMMM YYYY") ===
+        month.format("MMMM YYYY")
     );
     setFilteredExpenses(filtered);
-    setSelectedDateRange(dates);
+  };
+
+  // Handle month filter change
+  const handleMonthChange = (date) => {
+    setSelectedMonth(date);
+    filterByMonth(date);
   };
 
   // Budget category filter logic
@@ -44,16 +53,16 @@ export default function Dashboard({ expenses, getCategories }) {
 
   // Reset filters and show all expenses
   const clearFilters = () => {
-    setFilteredExpenses(expenses);
-    setSelectedDateRange(null);
+    setSelectedMonth(dayjs());
+    filterByMonth(dayjs());
     setSelectedCategory(null);
   };
 
   useEffect(() => {
-    setFilteredExpenses(expenses);
-    setSelectedDateRange(null);
+    setSelectedMonth(dayjs());
+    filterByMonth(dayjs());
     setSelectedCategory(null);
-  }, []);
+  }, [expenses]);
 
   return (
     <div className="table-container mx-auto custom-table">
@@ -64,7 +73,6 @@ export default function Dashboard({ expenses, getCategories }) {
           color="danger"
           type="dashed"
         >
-          {" "}
           <AlertTwoTone />
           Reset Filters
         </Button>
@@ -77,11 +85,16 @@ export default function Dashboard({ expenses, getCategories }) {
           {
             title: (
               <div>
-                <RangePicker
-                  onChange={handleDateFilter}
-                  value={selectedDateRange}
-                  placeholder={["From", "To"]}
+                {/* Month Picker */}
+                <MonthPicker
+                  onChange={handleMonthChange}
+                  value={selectedMonth}
+                  placeholder="Select Month"
                   className="ml-4"
+                  allowClear={false}
+                  disabledDate={(current) =>
+                    current && current > dayjs().endOf("month")
+                  }
                 />
               </div>
             ),
@@ -99,7 +112,7 @@ export default function Dashboard({ expenses, getCategories }) {
                   value={selectedCategory}
                   allowClear
                 >
-                  {getCategories().map((category) => (
+                  {getCategories(selectedMonth).map((category) => (
                     <Option
                       key={category._id}
                       value={category._id}
@@ -117,7 +130,6 @@ export default function Dashboard({ expenses, getCategories }) {
             render: (budgetId) => (
               <div className="flex items-center space-x-2">
                 {budgetId.icon ? budgetId.icon : <FaWallet />}{" "}
-                {/* Render icon */}
                 <span>{budgetId.name}</span>
               </div>
             ),
@@ -136,9 +148,30 @@ export default function Dashboard({ expenses, getCategories }) {
           },
         ]}
         rowKey="_id"
-        // Enable scroll for smaller screens
         scroll={{ x: "max-content" }}
         className="shadow-md"
+        locale={{
+          emptyText: (
+            <Empty
+              description={
+                <div className="text-center">
+                  <p className="mb-3 gradient-text-blue">
+                    No expenses found for {selectedMonth.format("MMMM YYYY")}.
+                  </p>
+                  {isCurrentMonth && (
+                    <Button
+                      type="primary"
+                      shape="round"
+                      onClick={() => addExpense()}
+                    >
+                      Add Expense
+                    </Button>
+                  )}
+                </div>
+              }
+            ></Empty>
+          ),
+        }}
       />
     </div>
   );

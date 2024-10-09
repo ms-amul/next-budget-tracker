@@ -3,24 +3,17 @@ import Budget from "@/components/Budget";
 import Income from "@/components/Income";
 import Expense from "@/components/Expense";
 
-const CustomModal = ({ 
-  isModalVisible, 
-  modalType, 
-  handleCloseModal, 
-  budgets, 
-  incomes, 
-  getBudgetCategoriesForDropdown, 
-  fetchData 
+const CustomModal = ({
+  isModalVisible,
+  modalType,
+  handleCloseModal,
+  budgets,
+  incomes,
+  getBudgetCategoriesForDropdown,
+  fetchData,
 }) => {
   return (
     <Modal
-      title={
-        modalType === "budget"
-          ? "Add Budget"
-          : modalType === "income"
-          ? "Add Income"
-          : "Add Expense"
-      }
       visible={isModalVisible}
       onCancel={handleCloseModal}
       footer={null}

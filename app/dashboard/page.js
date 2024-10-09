@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import NeumorphicCard from "@/components/QuickCards";
 import ExpenseTable from "@/components/ExpenseTable";
@@ -10,6 +10,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import CustomDrawer from "@/components/CustomDrawer";
 import CustomModal from "@/components/CustomModal";
+import dayjs from "dayjs"; // Assuming dayjs is already installed
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -95,12 +96,19 @@ export default function Dashboard() {
     }
   };
 
-  const getBudgetCategoriesForDropdown = () => {
-    return budgets.map((budget) => ({
-      name: budget.name,
-      _id: budget._id,
-      icon: budget.icon,
-    }));
+  const getBudgetCategoriesForDropdown = (selectedMonth) => {
+    const formattedMonth = selectedMonth.format("MMMM YYYY");
+
+    return budgets
+      .filter((budget) => {
+        const budgetMonthYear = dayjs(budget.createdAt).format("MMMM YYYY");
+        return budgetMonthYear === formattedMonth;
+      })
+      .map((budget) => ({
+        name: budget.name,
+        _id: budget._id,
+        icon: budget.icon,
+      }));
   };
 
   useEffect(() => {
@@ -161,19 +169,8 @@ export default function Dashboard() {
       <ExpenseTable
         expenses={expenses}
         getCategories={getBudgetCategoriesForDropdown}
+        addExpense={() => handleOpenModal("expense")}
       />
-
-      {/* Custom Modal */}
-      <CustomModal
-        isModalVisible={isModalVisible}
-        modalType={modalType}
-        handleCloseModal={handleCloseModal}
-        budgets={budgets}
-        incomes={incomes}
-        getBudgetCategoriesForDropdown={getBudgetCategoriesForDropdown}
-        fetchData={fetchData}
-      />
-
       {/* Custom Drawer */}
       <CustomDrawer
         isDrawerVisible={isDrawerVisible}
@@ -182,6 +179,16 @@ export default function Dashboard() {
         handleOpenModal={handleOpenModal}
         budgets={budgets}
         incomes={incomes}
+        fetchData={fetchData}
+      />
+      {/* Custom Modal */}
+      <CustomModal
+        isModalVisible={isModalVisible}
+        modalType={modalType}
+        handleCloseModal={handleCloseModal}
+        budgets={budgets}
+        incomes={incomes}
+        getBudgetCategoriesForDropdown={getBudgetCategoriesForDropdown}
         fetchData={fetchData}
       />
     </div>

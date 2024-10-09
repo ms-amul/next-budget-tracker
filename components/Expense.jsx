@@ -2,6 +2,7 @@
 
 import { Form, Input, Button, Select, message } from "antd";
 import { useState, useEffect } from "react";
+import dayjs from "dayjs"; // Assuming dayjs is installed
 
 export default function Expense({ getCategories, fetchData }) {
   const [categories, setCategories] = useState([]);
@@ -11,7 +12,8 @@ export default function Expense({ getCategories, fetchData }) {
   // Fetch the categories using the passed function
   useEffect(() => {
     const fetchCategories = async () => {
-      const budgetCategories = await getCategories(); // Assumes getCategories returns the array of {category, _id}
+      const currentMonth = dayjs(); // Current month as a dayjs object
+      const budgetCategories = await getCategories(currentMonth);
       setCategories(budgetCategories);
     };
     fetchCategories();
