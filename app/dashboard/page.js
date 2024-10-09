@@ -39,8 +39,11 @@ export default function Dashboard() {
     setIsDrawerVisible(false);
   };
 
-  const handleOpenModal = (type) => {
-    setModalType(type);
+  const handleOpenModal = (type, data) => {
+    setModalType({
+      type,
+      data,
+    });
     setIsModalVisible(true);
   };
 
@@ -169,7 +172,7 @@ export default function Dashboard() {
       <ExpenseTable
         expenses={expenses}
         getCategories={getBudgetCategoriesForDropdown}
-        addExpense={() => handleOpenModal("expense")}
+        addExpense={(data) => handleOpenModal("expense", data)}
       />
       {/* Custom Drawer */}
       <CustomDrawer

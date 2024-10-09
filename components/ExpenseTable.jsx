@@ -139,7 +139,7 @@ export default function Dashboard({ expenses, getCategories, addExpense }) {
             key: "action",
             render: (_, record) => (
               <div className="space-x-2">
-                <Button onClick={() => handleOpenModal("expense", record)}>
+                <Button onClick={() => addExpense(record)}>
                   Edit
                 </Button>
                 <Button danger>Delete</Button>

@@ -19,12 +19,25 @@ const CustomModal = ({
       footer={null}
       className="z-[999]"
     >
-      {modalType === "budget" && <Budget budget={budgets} />}
-      {modalType === "income" && <Income income={incomes} />}
-      {modalType === "expense" && (
+      {modalType.type === "budget" && (
+        <Budget
+          budget={budgets}
+          fetchData={fetchData}
+          editData={modalType.data}
+        />
+      )}
+      {modalType.type === "income" && (
+        <Income
+          income={incomes}
+          fetchData={fetchData}
+          editData={modalType.data}
+        />
+      )}
+      {modalType.type === "expense" && (
         <Expense
           getCategories={getBudgetCategoriesForDropdown}
           fetchData={fetchData}
+          editData={modalType.data}
         />
       )}
     </Modal>
