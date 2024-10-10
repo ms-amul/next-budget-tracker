@@ -1,5 +1,6 @@
 import "./globals.css";
 import SessionProviderWrapper from "./SessionProviderWrapper";
+import Head from "next/head"; // Import Head component for meta tags
 
 export const metadata = {
   title: "Next Budget Tracker",
@@ -9,8 +10,26 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <Head>
+        <title>{metadata.title}</title>
+        <meta name="description" content={metadata.description} />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/logo.png"/>
+        <link rel="manifest" href="/manifest.json" />
+        <meta charSet="UTF-8" />
+        <meta name="keywords" content="budget, tracker, finance, app" />
+        <meta name="author" content="Your Name" />
+        <meta property="og:title" content={metadata.title} />
+        <meta property="og:description" content={metadata.description} />
+        <meta property="og:image" content="/logo.png" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={metadata.title} />
+        <meta name="twitter:description" content={metadata.description} />
+        <meta name="twitter:image" content="/logo.png" />
+      </Head>
       <body>
-        <SessionProviderWrapper children={children} />
+        <SessionProviderWrapper>{children}</SessionProviderWrapper>
       </body>
     </html>
   );
