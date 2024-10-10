@@ -1,20 +1,39 @@
 "use client";
 
 import { Form, Input, Button, message } from "antd";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 
 // Dynamically import the EmojiPicker to ensure it's client-side only
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
-export default function BudgetForm({fetchData}) {
+export default function BudgetForm({ fetchData, editData }) {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm(); // To control the form instance
   const [selectedEmoji, setSelectedEmoji] = useState(""); // State to store selected emoji
   const [showPicker, setShowPicker] = useState(false); // To toggle the emoji picker
 
+  // Populate the form with editData if provided
+  useEffect(() => {
+    if (editData) {
+      form.setFieldsValue({
+        name: editData.name,
+        amount: editData.amount,
+        icon: editData.icon, // Set the existing icon/emoji
+      });
+      setSelectedEmoji(editData.icon); // Prepopulate emoji selection
+    } else {
+      form.setFieldsValue({
+        name: "",
+        amount: "",
+        icon: "",
+      });
+      setSelectedEmoji(""); // Reset emoji selection
+    }
+  }, [editData, form]);
+
   // Emoji select handler
-  const onEmojiClick = (emojiObject, event) => {
+  const onEmojiClick = (emojiObject) => {
     setSelectedEmoji(emojiObject.emoji); // Store the selected emoji
     setShowPicker(false); // Hide picker after selection
   };
@@ -35,8 +54,13 @@ export default function BudgetForm({fetchData}) {
     setLoading(true);
 
     try {
+      const method = editData ? "PUT" : "POST"; // If editData exists, use PUT, otherwise POST
+      if (editData) {
+        budgetData.id = editData._id; // Add the budget ID if editing
+      }
+
       const res = await fetch("/api/budget", {
-        method: "POST",
+        method,
         headers: {
           "Content-Type": "application/json",
         },
@@ -44,12 +68,12 @@ export default function BudgetForm({fetchData}) {
       });
 
       if (res.ok) {
-        message.success("Budget created successfully!"); // Success notification
+        message.success(editData ? "Budget updated successfully!" : "Budget created successfully!"); // Success notification
         form.resetFields(); // Clear form after successful submission
         setSelectedEmoji(""); // Clear emoji selection
         fetchData(); // Fetch updated budget data after successful submission
       } else {
-        message.error("Failed to create budget. Please try again.");
+        message.error("Failed to save budget. Please try again.");
       }
     } catch (error) {
       message.error("An error occurred. Please try again.");
@@ -62,7 +86,7 @@ export default function BudgetForm({fetchData}) {
   return (
     <div className="container mx-auto max-w-md p-6 shadow-lg bg-light-bg rounded-lg">
       <h1 className="gradient-text-blue text-xl font-semibold mb-6">
-        Create a New Budget
+        {editData ? "Edit Your Budget" : "Create a New Budget"} {/* Dynamic Title */}
       </h1>
 
       <Form
@@ -117,7 +141,7 @@ export default function BudgetForm({fetchData}) {
             className="w-full bg-gradient-to-r from-blue-500 to-purple-600"
             loading={loading} // Shows a loader on the button when submitting
           >
-            {loading ? "Submitting..." : "Create Budget"}
+            {loading ? "Submitting..." : editData ? "Edit Budget" : "Create Budget"} {/* Dynamic Button Text */}
           </Button>
         </Form.Item>
       </Form>

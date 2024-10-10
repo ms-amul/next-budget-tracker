@@ -14,7 +14,6 @@ import dayjs from "dayjs"; // Assuming dayjs is already installed
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
-
   const [budgets, setBudgets] = useState([]);
   const [incomes, setIncomes] = useState([]);
   const [expenses, setExpenses] = useState([]);
@@ -63,6 +62,8 @@ export default function Dashboard() {
       const incomesData = await incomeRes.json();
       const expensesData = await expenseRes.json();
 
+      console.log(budgetsData);
+
       setBudgets(budgetsData);
       setIncomes(incomesData);
       setExpenses(expensesData);
@@ -101,17 +102,19 @@ export default function Dashboard() {
 
   const getBudgetCategoriesForDropdown = (selectedMonth) => {
     const formattedMonth = selectedMonth.format("MMMM YYYY");
-
-    return budgets
-      .filter((budget) => {
-        const budgetMonthYear = dayjs(budget.createdAt).format("MMMM YYYY");
-        return budgetMonthYear === formattedMonth;
-      })
-      .map((budget) => ({
-        name: budget.name,
-        _id: budget._id,
-        icon: budget.icon,
-      }));
+    if (budgets.length>0) {
+      return budgets
+        .filter((budget) => {
+          const budgetMonthYear = dayjs(budget.createdAt).format("MMMM YYYY");
+          return budgetMonthYear === formattedMonth;
+        })
+        .map((budget) => ({
+          name: budget.name,
+          _id: budget._id,
+          icon: budget.icon,
+        }));
+    }
+    return [];
   };
 
   useEffect(() => {
@@ -173,6 +176,7 @@ export default function Dashboard() {
         expenses={expenses}
         getCategories={getBudgetCategoriesForDropdown}
         addExpense={(data) => handleOpenModal("expense", data)}
+        fetchData={fetchData}
       />
       {/* Custom Drawer */}
       <CustomDrawer

@@ -68,8 +68,8 @@ const CustomDrawer = ({
           </Button>
         ) : (
           <p className="gradient-text-green">
-            Adding new {drawerType === "budget" ? "budgets" : "incomes"} is
-            only allowed in the current month.
+            Adding new {drawerType === "budget" ? "budgets" : "incomes"} is only
+            allowed in the current month.
           </p>
         )}
 
@@ -98,6 +98,9 @@ const CustomDrawer = ({
                 key={budget._id}
                 budget={budget}
                 fetchData={fetchData}
+                editData={() => {
+                  handleOpenModal(drawerType, budget);
+                }}
               />
             ))
           ) : (
@@ -131,6 +134,9 @@ const CustomDrawer = ({
                 key={income._id}
                 income={income}
                 fetchData={fetchData}
+                editData={() => {
+                  handleOpenModal(drawerType, income);
+                }}
               />
             ))
           ) : (

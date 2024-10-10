@@ -1,20 +1,49 @@
 "use client";
-import { Button, DatePicker, Empty, Select, Table } from "antd";
+import {
+  Button,
+  DatePicker,
+  Empty,
+  Select,
+  Table,
+  message,
+  Popconfirm,
+} from "antd";
 import { useEffect, useState } from "react";
 import { FaWallet } from "react-icons/fa"; // Default icon if category icon is missing
 import { AlertTwoTone } from "@ant-design/icons";
 import dayjs from "dayjs"; // Assuming dayjs is installed for date handling
+import { FaEdit } from "react-icons/fa";
+import { RiDeleteBin5Fill } from "react-icons/ri";
 
 const { MonthPicker } = DatePicker;
 const { Option } = Select;
 
-export default function Dashboard({ expenses, getCategories, addExpense }) {
+export default function Dashboard({
+  expenses,
+  getCategories,
+  addExpense,
+  fetchData,
+}) {
   const currentMonth = dayjs().startOf("month");
 
   const [filteredExpenses, setFilteredExpenses] = useState(expenses);
   const [selectedMonth, setSelectedMonth] = useState(dayjs()); // Default to current month
   const [selectedCategory, setSelectedCategory] = useState(null);
   const isCurrentMonth = selectedMonth.isSame(currentMonth, "month");
+
+  const deleteExpense = async (id) => {
+    const res = await fetch(`/api/expense`, {
+      method: "DELETE",
+      body: JSON.stringify({ id }),
+      headers: { "Content-Type": "application/json" },
+    });
+    if (res.ok) {
+      message.success("Deleted the expense");
+      fetchData();
+    } else {
+      message.error("Failed to delete expense. Please try again.");
+    }
+  };
 
   // Helper function to filter expenses by selected month
   const filterByMonth = (month) => {
@@ -140,9 +169,18 @@ export default function Dashboard({ expenses, getCategories, addExpense }) {
             render: (_, record) => (
               <div className="space-x-2">
                 <Button onClick={() => addExpense(record)}>
-                  Edit
+                  <FaEdit />
                 </Button>
-                <Button danger>Delete</Button>
+                <Popconfirm
+                  title="Are you sure you want to delete this Expense?"
+                  onConfirm={() => deleteExpense(record._id)} // Confirm delete
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button danger>
+                    <RiDeleteBin5Fill />
+                  </Button>
+                </Popconfirm>
               </div>
             ),
           },

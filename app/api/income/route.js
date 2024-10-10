@@ -59,8 +59,9 @@ export async function PUT(req) {
   const { id, name, amount, icon } = await req.json();
 
   try {
+    const user = await User.findOne({ email: session.user.email });
     const updatedIncome = await Income.findOneAndUpdate(
-      { _id: id, createdBy: session.user.id },
+      { _id: id, createdBy: user._id },
       { name, amount, icon },
       { new: true }
     );
@@ -82,7 +83,8 @@ export async function DELETE(req) {
   const { id } = await req.json();
 
   try {
-    await Income.findOneAndDelete({ _id: id, createdBy: session.user.id });
+    const user = await User.findOne({ email: session.user.email });
+    await Income.findOneAndDelete({ _id: id, createdBy: user._id });
     return NextResponse.json({ message: "Income deleted" }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });

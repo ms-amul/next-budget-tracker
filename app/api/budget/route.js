@@ -61,8 +61,9 @@ export async function PUT(req) {
   const { id, name, amount, icon } = await req.json();
 
   try {
+    const user = await User.findOne({ email: session.user.email });
     const updatedBudget = await Budget.findOneAndUpdate(
-      { _id: id, createdBy: session.user.id },
+      { _id: id, createdBy: user._id },
       { name, amount, icon },
       { new: true }
     );
@@ -84,9 +85,26 @@ export async function DELETE(req) {
   const { id } = await req.json();
 
   try {
-    await Budget.findOneAndDelete({ _id: id, createdBy: session.user.id });
-    return NextResponse.json({ message: "Budget deleted" }, { status: 200 });
+    // Fetch the user associated with the session
+    const user = await User.findOne({ email: session.user.email });
+
+    // Find and delete the budget (this will also trigger the middleware to delete related expenses)
+    const budget = await Budget.findOneAndDelete({
+      _id: id,
+      createdBy: user._id,
+    });
+    if (!budget) {
+      return NextResponse.json(
+        { error: "Budget not found or unauthorized" },
+        { status: 404 }
+      );
+    }
+    return NextResponse.json(
+      { message: "Budget and associated expenses deleted" },
+      { status: 200 }
+    );
   } catch (error) {
+    // Handle any errors that occur during the deletion process
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 }

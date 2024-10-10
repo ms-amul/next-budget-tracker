@@ -17,7 +17,6 @@ const CustomModal = ({
       visible={isModalVisible}
       onCancel={handleCloseModal}
       footer={null}
-      className="z-[999]"
     >
       {modalType.type === "budget" && (
         <Budget

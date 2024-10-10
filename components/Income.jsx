@@ -1,20 +1,39 @@
 "use client";
 
 import { Form, Input, Button, message } from "antd";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 
 // Dynamically import the EmojiPicker to ensure it's client-side only
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
-export default function IncomeForm({ fetchData }) {
+export default function IncomeForm({ fetchData, editData }) {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm(); // To control the form instance
   const [selectedEmoji, setSelectedEmoji] = useState(""); // State to store selected emoji
   const [showPicker, setShowPicker] = useState(false); // To toggle the emoji picker
 
+  // Populate the form with editData if provided
+  useEffect(() => {
+    if (editData) {
+      form.setFieldsValue({
+        name: editData.name,
+        amount: editData.amount,
+        icon: editData.icon, // Prepopulate the icon/emoji
+      });
+      setSelectedEmoji(editData.icon); // Prepopulate the emoji state
+    } else {
+      form.setFieldsValue({
+        name: "",
+        amount: "",
+        icon: "",
+      });
+      setSelectedEmoji(""); // Reset emoji selection
+    }
+  }, [editData, form]);
+
   // Emoji select handler
-  const onEmojiClick = (emojiObject, event) => {
+  const onEmojiClick = (emojiObject) => {
     setSelectedEmoji(emojiObject.emoji); // Store the selected emoji
     setShowPicker(false); // Hide picker after selection
   };
@@ -35,8 +54,13 @@ export default function IncomeForm({ fetchData }) {
     setLoading(true);
 
     try {
+      const method = editData ? "PUT" : "POST"; // Use PUT if editing, POST if adding
+      if (editData) {
+        incomeData.id = editData._id; // Include the income ID when editing
+      }
+
       const res = await fetch("/api/income", {
-        method: "POST",
+        method,
         headers: {
           "Content-Type": "application/json",
         },
@@ -44,12 +68,12 @@ export default function IncomeForm({ fetchData }) {
       });
 
       if (res.ok) {
-        message.success("Income added successfully!"); // Success notification
+        message.success(editData ? "Income updated successfully!" : "Income added successfully!"); // Success notification
         form.resetFields(); // Clear form after successful submission
         setSelectedEmoji(""); // Clear emoji selection
         fetchData(); // Fetch data to update the income list
       } else {
-        message.error("Failed to add income. Please try again.");
+        message.error("Failed to save income. Please try again.");
       }
     } catch (error) {
       message.error("An error occurred. Please try again.");
@@ -62,7 +86,7 @@ export default function IncomeForm({ fetchData }) {
   return (
     <div className="container mx-auto max-w-md p-6 shadow-lg bg-light-bg rounded-lg">
       <h1 className="gradient-text-blue text-xl font-semibold mb-6">
-        Add Your Income
+        {editData ? "Edit Your Income" : "Add Your Income"} {/* Dynamic Title */}
       </h1>
 
       <Form
@@ -71,7 +95,7 @@ export default function IncomeForm({ fetchData }) {
         onFinish={onFinish}
         className="space-y-4"
       >
-        {/* Income Name */}
+        {/* Income Source */}
         <Form.Item
           label="Income Source"
           name="name"
@@ -119,7 +143,7 @@ export default function IncomeForm({ fetchData }) {
             className="w-full bg-gradient-to-r from-blue-500 to-purple-600"
             loading={loading} // Shows a loader on the button when submitting
           >
-            {loading ? "Submitting..." : "Add Income"}
+            {loading ? "Submitting..." : editData ? "Edit Income" : "Add Income"} {/* Dynamic Button Text */}
           </Button>
         </Form.Item>
       </Form>

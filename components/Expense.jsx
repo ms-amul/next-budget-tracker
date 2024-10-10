@@ -9,10 +9,9 @@ export default function Expense({ getCategories, fetchData, editData }) {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
-  // Fetch the categories using the passed function
   useEffect(() => {
     const fetchCategories = async () => {
-      const currentMonth = dayjs(); // Current month as a dayjs object
+      const currentMonth = dayjs();
       const budgetCategories = await getCategories(currentMonth);
       setCategories(budgetCategories);
     };
@@ -25,7 +24,13 @@ export default function Expense({ getCategories, fetchData, editData }) {
       form.setFieldsValue({
         name: editData.name,
         amount: editData.amount,
-        categoryId: editData.budgetId._id, // Assuming budgetId contains the ID of the selected category
+        categoryId: editData.budgetId._id,
+      });
+    } else{
+      form.setFieldsValue({
+        name: "",
+        amount: "",
+        categoryId: "",
       });
     }
   }, [editData, form]);
@@ -35,16 +40,18 @@ export default function Expense({ getCategories, fetchData, editData }) {
     const expenseData = {
       name: values.name,
       amount: values.amount,
-      budgetId: values.categoryId, // Budget ID
+      budgetId: values.categoryId,
     };
 
     setLoading(true); // Start loading
 
     try {
-      const method = editData ? "PUT" : "POST"; // Determine method based on edit or add
-      const url = editData ? `/api/expense/${editData._id}` : "/api/expense"; // Dynamic URL for editing
+      const method = editData ? "PUT" : "POST";
+      if(editData){
+        expenseData.id = editData._id;
+      }
 
-      const res = await fetch(url, {
+      const res = await fetch("/api/expense", {
         method,
         headers: {
           "Content-Type": "application/json",
@@ -53,9 +60,10 @@ export default function Expense({ getCategories, fetchData, editData }) {
       });
 
       if (res.ok) {
+        console.log(res);
         message.success(editData ? "Expense updated successfully!" : "Expense added successfully!"); // Success notification
-        form.resetFields(); // Clear form after successful submission
-        fetchData(); // Refresh the data after adding or updating expense
+        form.resetFields();
+        fetchData();
       } else {
         message.error("Failed to save expense. Please try again.");
       }

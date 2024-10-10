@@ -1,6 +1,26 @@
-import { RiMoneyDollarCircleFill, RiEdit2Line, RiDeleteBinLine } from "react-icons/ri";
+import {
+  RiMoneyDollarCircleFill,
+  RiEdit2Line,
+  RiDeleteBinLine,
+} from "react-icons/ri";
+import { message, Popconfirm } from "antd";
 
-const BudgetCard = ({ budget }) => {
+const BudgetCard = ({ budget, editData, fetchData }) => {
+  // Function to handle deletion of budget
+  const deleteBudget = async (id) => {
+    const res = await fetch(`/api/budget`, {
+      method: "DELETE",
+      body: JSON.stringify({ id }),
+      headers: { "Content-Type": "application/json" },
+    });
+    if (res.ok) {
+      message.success("Deleted the budget");
+      fetchData();
+    } else {
+      message.error("Failed to delete budget. Please try again.");
+    }
+  };
+
   return (
     <div className="p-4 bg-white rounded-lg shadow-md my-4 hover:shadow-lg transition-shadow duration-300">
       <div className="flex items-center mb-4">
@@ -17,12 +37,29 @@ const BudgetCard = ({ budget }) => {
         </div>
       </div>
       <div className="flex justify-end space-x-4">
-        <button className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-300">
+        {/* Edit Button */}
+        <button
+          onClick={() => {
+            editData();
+          }}
+          className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-300"
+        >
           <RiEdit2Line className="text-lg" />
         </button>
-        <button className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition duration-300">
-          <RiDeleteBinLine className="text-lg" />
-        </button>
+
+        {/* Delete Button with Confirmation Popover */}
+        <Popconfirm
+          title="Are you sure you want to delete this budget? This will delete all associated expenses too"
+          onConfirm={() => deleteBudget(budget._id)} // Confirm delete
+          okText="Yes"
+          cancelText="No"
+        >
+          <button
+            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition duration-300"
+          >
+            <RiDeleteBinLine className="text-lg" />
+          </button>
+        </Popconfirm>
       </div>
     </div>
   );

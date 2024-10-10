@@ -42,7 +42,9 @@ export async function GET(req) {
 
   try {
     const user = await User.findOne({ email: session.user.email });
-    const expenses = await Expense.find({ createdBy: user._id }).populate('budgetId');
+    const expenses = await Expense.find({ createdBy: user._id }).populate(
+      "budgetId"
+    );
     return NextResponse.json(expenses, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
@@ -59,10 +61,11 @@ export async function PUT(req) {
   }
 
   const { id, name, amount, budgetId } = await req.json();
-
+  console.log(req.json());
   try {
+    const user = await User.findOne({ email: session.user.email });
     const updatedExpense = await Expense.findOneAndUpdate(
-      { _id: id, createdBy: session.user.id },
+      { _id: id, createdBy: user._id },
       { name, amount, budgetId },
       { new: true }
     );
@@ -84,7 +87,8 @@ export async function DELETE(req) {
   const { id } = await req.json();
 
   try {
-    await Expense.findOneAndDelete({ _id: id, createdBy: session.user.id });
+    const user = await User.findOne({ email: session.user.email });
+    await Expense.findOneAndDelete({ _id: id, createdBy: user._id });
     return NextResponse.json({ message: "Expense deleted" }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
