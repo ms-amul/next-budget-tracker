@@ -6,15 +6,15 @@ import Graph from "@/components/Graph";
 import { useEffect, useState } from "react";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { GiExpense, GiWallet } from "react-icons/gi";
-import { Spin } from "antd";
+import { Spin, Button } from "antd";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import CustomDrawer from "@/components/CustomDrawer";
 import CustomModal from "@/components/CustomModal";
 import dayjs from "dayjs";
+import GeminiModal from "@/components/GeminiSuggestion";
 
 export default function Dashboard() {
-
   const { data: session, status } = useSession();
   const [budgets, setBudgets] = useState([]);
   const [incomes, setIncomes] = useState([]);
@@ -124,7 +124,7 @@ export default function Dashboard() {
 
   if (status === "loading") {
     return (
-      <div className="flex flex-col scale-150 h-screen w-screen fixed items-center justify-center gap-3">
+      <div className="flex flex-col scale-150 h-screen w-full fixed items-center justify-center gap-3">
         <Spin size="large"></Spin>
         <p>Loading your data!</p>
       </div>
@@ -133,9 +133,24 @@ export default function Dashboard() {
 
   if (status === "unauthenticated") {
     return (
-      <div className="text-center">
-        <p>You are not signed in. Please sign in to access the dashboard.</p>
-        <Link href="/">Back to Home</Link>
+      <div className="flex items-center justify-center min-h-[90vh]">
+        <div className="rounded-lg p-8 max-w-xl w-full text-center">
+          <img src="/load.gif" alt="loading.." className="mix-blend-multiply rounded-xl" />
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">
+            Access Denied
+          </h2>
+          <p className="text-gray-600 mb-6">
+            You are not signed in. Please sign in to access the dashboard.
+          </p>
+          <Link href="/" className="">
+            <Button
+              color="primary"
+              variant="outlined"
+            >
+              Go to Home
+            </Button>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -143,14 +158,15 @@ export default function Dashboard() {
   return (
     <div className="p-4">
       <div className="flex gap-1 items-center">
-        <span className="text-white bg-cyan-900 text-xs font-normal p-2 rounded-full">
-          {dayjs().format("MMMM YYYY")}
-        </span>
-        <h1 className="gradient-text-blue text-lg md:text-2xl font-semibold flex flex-col">
+        <h1 className="gradient-text-blue text-lg md:text-2xl font-semibold flex items-center">
+          <span className="text-white p-2 rounded-full hidden md:block">
+            {dayjs().format("MMMM YYYY")},
+          </span>
           Hello 👋 {session?.user?.name}, track all your expenses, budget and
           incomes...
         </h1>
       </div>
+      <GeminiModal income={incomes} budget={budgets} expenses={expenses} />
 
       <div className="flex flex-wrap justify-center">
         {/* Budget Card */}
@@ -177,9 +193,7 @@ export default function Dashboard() {
           onEyeClick={() => handleOpenModal("expense")}
         />
       </div>
-
       <Graph expenses={expenses} budgets={budgets} />
-
       <ExpenseTable
         expenses={expenses}
         getCategories={getBudgetCategoriesForDropdown}

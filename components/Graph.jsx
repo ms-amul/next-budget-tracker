@@ -1,30 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { Bar } from "react-chartjs-2";
 import { DatePicker } from "antd";
+import { useEffect, useState } from "react";
+import { Line } from "react-chartjs-2"; // Use Line chart instead of Bar
+import { BiSolidCommentError } from "react-icons/bi";
+
 import {
-  Chart as ChartJS,
   CategoryScale,
+  Chart as ChartJS,
+  Legend,
   LinearScale,
-  BarElement,
-  LineElement, // Import LineElement for line charts
+  LineElement,
+  PointElement,
   Title,
   Tooltip,
-  Legend,
-  PointElement, // Import PointElement for line chart points
 } from "chart.js";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 
-// Register the dayjs plugin
 dayjs.extend(isBetween);
 
-// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  BarElement,
-  LineElement, // Register LineElement
-  PointElement, // Register PointElement
+  LineElement,
+  PointElement, // Register PointElement for line chart points
   Title,
   Tooltip,
   Legend
@@ -33,11 +31,10 @@ ChartJS.register(
 const { MonthPicker } = DatePicker;
 
 export default function MonthlyExpenseGraph({ expenses, budgets }) {
-  const [selectedMonth, setSelectedMonth] = useState(dayjs()); // Default to current month
+  const [selectedMonth, setSelectedMonth] = useState(dayjs());
   const [dailyExpenses, setDailyExpenses] = useState([]);
-  const [totalBudget, setTotalBudget] = useState(0); // Track total budget for the selected month
+  const [totalBudget, setTotalBudget] = useState(0);
 
-  // Function to group and sum expenses by day for the selected month
   const calculateDailyExpenses = (selectedMonth) => {
     const startOfMonth = selectedMonth.startOf("month");
     const endOfMonth = selectedMonth.endOf("month");
@@ -45,21 +42,18 @@ export default function MonthlyExpenseGraph({ expenses, budgets }) {
     const dailyExpenseMap = {};
     let monthlyTotalBudget = 0;
 
-    // Sum all budgets for the selected month
     budgets.forEach((budget) => {
       if (dayjs(budget.createdAt).isSame(selectedMonth, "month")) {
         monthlyTotalBudget += budget.amount;
       }
     });
-    
-    setTotalBudget(monthlyTotalBudget); // Set the total budget for display
 
-    // Loop through all expenses and sum them by day
+    setTotalBudget(monthlyTotalBudget);
+
     expenses.forEach((expense) => {
       const expenseDate = dayjs(expense.createdAt);
-      // Check if the expense falls in the selected month
       if (expenseDate.isBetween(startOfMonth, endOfMonth, null, "[]")) {
-        const day = expenseDate.date(); // Day of the month
+        const day = expenseDate.date();
         if (!dailyExpenseMap[day]) {
           dailyExpenseMap[day] = 0;
         }
@@ -67,58 +61,54 @@ export default function MonthlyExpenseGraph({ expenses, budgets }) {
       }
     });
 
-    // Convert the dailyExpenseMap to an array to be used in the graph
     const dailyData = [];
     for (let i = 1; i <= selectedMonth.daysInMonth(); i++) {
       dailyData.push({
         day: i,
-        total: dailyExpenseMap[i] || 0, // Use 0 if no expenses for the day
+        total: dailyExpenseMap[i] || 0,
       });
     }
 
     setDailyExpenses(dailyData);
   };
 
-  // Handle month selection change
   const handleMonthChange = (date) => {
     setSelectedMonth(date);
     calculateDailyExpenses(date);
   };
 
   useEffect(() => {
-    calculateDailyExpenses(selectedMonth); // Calculate for the current month initially
+    calculateDailyExpenses(selectedMonth);
   }, [expenses, selectedMonth, budgets]);
 
-  // Prepare data for the Chart.js Bar Chart
   const chartData = {
     labels: dailyExpenses.map((data) => data.day),
     datasets: [
       {
         label: "Total Expense (₹)",
         data: dailyExpenses.map((data) => data.total),
-        backgroundColor: dailyExpenses.map((data) =>
-          data.total <= totalBudget
-            ? "rgba(76, 175, 80, 0.7)"
-            : "rgba(244, 67, 54, 0.7)"
-        ), // Green if within budget, red if exceeding
-        borderColor: "rgba(0, 0, 0, 0.2)",
-        borderWidth: 1,
+        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        borderWidth: 2,
+        fill: true, // Filling under the line to give better visual impact
+        pointBackgroundColor: "rgba(255, 99, 132, 0.7)", // Point color
+        pointRadius: 4, // Make points more visible
       },
       {
         label: "Budget (₹)",
-        data: dailyExpenses.map(() => totalBudget), // Budget line
-        type: "line",
-        borderColor: "rgba(255, 165, 0, 1)", // Orange line for budget
+        data: dailyExpenses.map(() => totalBudget),
+        borderColor: "rgba(255, 165, 0, 1)",
         backgroundColor: "rgba(255, 165, 0, 0.2)",
         borderWidth: 2,
         fill: false,
+        borderDash: [10, 5], // Dashed line for budget
       },
     ],
   };
 
-  // Chart options for better styling and appearance
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top",
@@ -147,8 +137,13 @@ export default function MonthlyExpenseGraph({ expenses, budgets }) {
 
   return (
     <div>
-      <div className="my-4 text-right">
-        {/* Month Picker to select other months */}
+      <div className="flex items-baseline gap-2 justify-end">
+      <BiSolidCommentError />
+        <h3 className="gradient-text-green font-semibold">
+           Remaining Budget: ₹{" "}
+          {totalBudget -
+            dailyExpenses.reduce((sum, data) => sum + data.total, 0)}
+        </h3>
         <MonthPicker
           onChange={handleMonthChange}
           value={selectedMonth}
@@ -157,21 +152,9 @@ export default function MonthlyExpenseGraph({ expenses, budgets }) {
         />
       </div>
 
-      <div style={{ width: "100%", height: "400px" }}>
-        <Bar data={chartData} options={chartOptions} />
-      </div>
-
-      {/* Budget and Expense Summary */}
-      <div className="mt-4">
-        <h3>
-          Total Expenses: ₹
-          {dailyExpenses.reduce((sum, data) => sum + data.total, 0)}
-        </h3>
-        <h3>Total Budget for the Month: ₹{totalBudget}</h3>
-        <h3>
-          Remaining Budget: ₹
-          {totalBudget - dailyExpenses.reduce((sum, data) => sum + data.total, 0)}
-        </h3>
+      <div style={{ width: "100%", height: "500px" }}>
+        {" "}
+        <Line data={chartData} options={chartOptions} />
       </div>
     </div>
   );
