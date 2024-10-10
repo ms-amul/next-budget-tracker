@@ -2,6 +2,7 @@
 
 import NeumorphicCard from "@/components/QuickCards";
 import ExpenseTable from "@/components/ExpenseTable";
+import Graph from "@/components/Graph";
 import { useEffect, useState } from "react";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { GiExpense, GiWallet } from "react-icons/gi";
@@ -13,7 +14,7 @@ import CustomModal from "@/components/CustomModal";
 import dayjs from "dayjs";
 
 export default function Dashboard() {
-  
+
   const { data: session, status } = useSession();
   const [budgets, setBudgets] = useState([]);
   const [incomes, setIncomes] = useState([]);
@@ -61,7 +62,7 @@ export default function Dashboard() {
       const budgetsData = await budgetRes.json();
       const incomesData = await incomeRes.json();
       const expensesData = await expenseRes.json();
-
+      console.log(expensesData);
       console.log(budgetsData);
 
       setBudgets(budgetsData);
@@ -176,6 +177,8 @@ export default function Dashboard() {
           onEyeClick={() => handleOpenModal("expense")}
         />
       </div>
+
+      <Graph expenses={expenses} budgets={budgets} />
 
       <ExpenseTable
         expenses={expenses}

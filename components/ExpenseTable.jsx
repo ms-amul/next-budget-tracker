@@ -114,26 +114,6 @@ export default function Dashboard({
           {
             title: (
               <div>
-                {/* Month Picker */}
-                <MonthPicker
-                  onChange={handleMonthChange}
-                  value={selectedMonth}
-                  placeholder="Select Month"
-                  className="ml-4"
-                  allowClear={false}
-                  disabledDate={(current) =>
-                    current && current > dayjs().endOf("month")
-                  }
-                />
-              </div>
-            ),
-            dataIndex: "createdAt",
-            key: "createdAt",
-            render: (date) => new Date(date).toLocaleDateString(),
-          },
-          {
-            title: (
-              <div>
                 <Select
                   placeholder="Select Category"
                   style={{ width: 150, marginLeft: "10px" }}
@@ -164,23 +144,42 @@ export default function Dashboard({
             ),
           },
           {
-            title: "Action",
-            key: "action",
+            title: (
+              <div className="">
+                <MonthPicker
+                  onChange={handleMonthChange}
+                  value={selectedMonth}
+                  placeholder="Select Month"
+                  allowClear={false}
+                  disabledDate={(current) =>
+                    current && current > dayjs().endOf("month")
+                  }
+                />
+              </div>
+            ),
+            key: "date-actions",
             render: (_, record) => (
-              <div className="space-x-2">
-                <Button onClick={() => addExpense(record)}>
-                  <FaEdit />
-                </Button>
-                <Popconfirm
-                  title="Are you sure you want to delete this Expense?"
-                  onConfirm={() => deleteExpense(record._id)} // Confirm delete
-                  okText="Yes"
-                  cancelText="No"
-                >
-                  <Button danger>
-                    <RiDeleteBin5Fill />
+              <div className="flex gap-2">
+                {/* Date display */}
+                <span className="text-white bg-cyan-900 text-xs font-normal p-2 rounded-full">
+                  {new Date(record.createdAt).toLocaleDateString()}
+                </span>
+                {/* Action buttons */}
+                <div className="space-x-2">
+                  <Button onClick={() => addExpense(record)}>
+                    <FaEdit />
                   </Button>
-                </Popconfirm>
+                  <Popconfirm
+                    title="Are you sure you want to delete this Expense?"
+                    onConfirm={() => deleteExpense(record._id)} // Confirm delete
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <Button danger>
+                      <RiDeleteBin5Fill />
+                    </Button>
+                  </Popconfirm>
+                </div>
               </div>
             ),
           },
@@ -194,7 +193,7 @@ export default function Dashboard({
               description={
                 <div className="text-center">
                   <p className="mb-3 gradient-text-blue">
-                    No expenses found for {selectedMonth.format("MMMM YYYY")}.
+                    No expenses found for {selectedMonth.format("MMMM YYYY")} .
                   </p>
                   {isCurrentMonth && (
                     <Button
@@ -207,7 +206,7 @@ export default function Dashboard({
                   )}
                 </div>
               }
-            ></Empty>
+            />
           ),
         }}
       />
