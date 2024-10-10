@@ -1,7 +1,7 @@
 import { Modal } from "antd";
-import Budget from "@/components/Budget";
-import Income from "@/components/Income";
-import Expense from "@/components/Expense";
+import Budget from "@/components/Forms/Budget";
+import Income from "@/components/Forms/Income";
+import Expense from "@/components/Forms/Expense";
 
 const CustomModal = ({
   isModalVisible,

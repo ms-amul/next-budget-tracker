@@ -1,5 +1,4 @@
-"use client"
-import React from "react";
+"use client";
 import { Card } from "antd";
 import { FaEye } from "react-icons/fa6";
 

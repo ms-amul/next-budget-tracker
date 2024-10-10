@@ -1,6 +1,6 @@
 import { Drawer, Button, DatePicker, Empty } from "antd";
-import BudgetCard from "@/components/BudgetCard";
-import IncomeCard from "@/components/IncomeCard";
+import BudgetCard from "@/components/SidebarCards/BudgetCard";
+import IncomeCard from "@/components/SidebarCards/IncomeCard";
 import { useState, useMemo } from "react";
 import dayjs from "dayjs"; // Assuming dayjs is installed for date handling
 

@@ -54,9 +54,7 @@ const IncomeCard = ({ income, editData, fetchData }) => {
           okText="Yes"
           cancelText="No"
         >
-          <button
-            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition duration-300"
-          >
+          <button className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition duration-300">
             <RiDeleteBinLine className="text-lg" />
           </button>
         </Popconfirm>

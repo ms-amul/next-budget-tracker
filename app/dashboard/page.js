@@ -10,9 +10,10 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import CustomDrawer from "@/components/CustomDrawer";
 import CustomModal from "@/components/CustomModal";
-import dayjs from "dayjs"; // Assuming dayjs is already installed
+import dayjs from "dayjs";
 
 export default function Dashboard() {
+  
   const { data: session, status } = useSession();
   const [budgets, setBudgets] = useState([]);
   const [incomes, setIncomes] = useState([]);
@@ -23,7 +24,6 @@ export default function Dashboard() {
     totalExpenses: 0,
   });
 
-  // State for Drawers and Modal
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const [drawerType, setDrawerType] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -102,7 +102,7 @@ export default function Dashboard() {
 
   const getBudgetCategoriesForDropdown = (selectedMonth) => {
     const formattedMonth = selectedMonth.format("MMMM YYYY");
-    if (budgets.length>0) {
+    if (budgets.length > 0) {
       return budgets
         .filter((budget) => {
           const budgetMonthYear = dayjs(budget.createdAt).format("MMMM YYYY");
@@ -141,10 +141,15 @@ export default function Dashboard() {
 
   return (
     <div className="p-4">
-      <h1 className="gradient-text-blue text-lg md:text-2xl font-semibold">
-        Hello 👋 {session?.user?.name}, track all your expenses, budget and
-        incomes...
-      </h1>
+      <div className="flex gap-1 items-center">
+        <span className="text-white bg-cyan-900 text-xs font-normal p-2 rounded-full">
+          {dayjs().format("MMMM YYYY")}
+        </span>
+        <h1 className="gradient-text-blue text-lg md:text-2xl font-semibold flex flex-col">
+          Hello 👋 {session?.user?.name}, track all your expenses, budget and
+          incomes...
+        </h1>
+      </div>
 
       <div className="flex flex-wrap justify-center">
         {/* Budget Card */}
