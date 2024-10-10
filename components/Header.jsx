@@ -39,10 +39,10 @@ export default function Header() {
               variant="fill"
               size="large"
               onClick={() => signIn("google")}
-              className="flex items-center font-semibold"
+              className="flex items-center font-bold"
             >
               <FcGoogle />
-              Sign in with Google
+              Sign In
             </Button>
           </>
         )}
