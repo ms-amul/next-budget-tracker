@@ -1,10 +1,9 @@
-const withPWA = require('next-pwa');
+const withPWA = require("next-pwa")({
+  dest: "public", // This is the correct place for the PWA configuration
+  register: true,
+  skipWaiting: true,
+});
 
 module.exports = withPWA({
-  pwa: {
-    dest: 'public',
-    register: true,
-    skipWaiting: true,
-  },
-  output: 'export',
+  // Any other Next.js config options can go here
 });

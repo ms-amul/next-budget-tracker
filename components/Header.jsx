@@ -8,10 +8,10 @@ export default function Header() {
   const { data: session, status } = useSession();
 
   return (
-    <div className="md:px-16">
-      <div className="flex justify-between items-center p-2">
+    <div className="md:px-16 shadow-md rounded-3xl">
+      <div className="flex justify-between items-center p-2 rounded-2xl">
         <div className="flex items-center text-xl font-bold gradient-text-blue">
-          <img src="/logo.png" className="mix-blend-multiply w-12 h-12" />
+          <img src="/logo.png" className="mix-blend-multiply w-12 h-12 scale-125" />
           Servify - Finance manager
         </div>
         {status === "authenticated" ? (
@@ -47,7 +47,7 @@ export default function Header() {
           </>
         )}
       </div>
-      <hr className="border-gray-400 mt-1" />
+      <hr className="border-blue-700 mt-1" />
     </div>
   );
 }

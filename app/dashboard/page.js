@@ -1,5 +1,4 @@
 "use client";
-
 import NeumorphicCard from "@/components/QuickCards";
 import ExpenseTable from "@/components/ExpenseTable";
 import Graph from "@/components/Graph";
@@ -53,6 +52,7 @@ export default function Dashboard() {
 
   const fetchData = async () => {
     try {
+      
       const [budgetRes, incomeRes, expenseRes] = await Promise.all([
         fetch("/api/budget"),
         fetch("/api/income"),
@@ -119,8 +119,10 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (status === "authenticated") {
+      fetchData();
+    }
+  }, [status]);
 
   if (status === "loading") {
     return (
@@ -135,7 +137,11 @@ export default function Dashboard() {
     return (
       <div className="flex items-center justify-center min-h-[90vh]">
         <div className="rounded-lg p-8 max-w-xl w-full text-center">
-          <img src="/load.gif" alt="loading.." className="mix-blend-multiply rounded-xl" />
+          <img
+            src="/load.gif"
+            alt="loading.."
+            className="mix-blend-multiply rounded-xl"
+          />
           <h2 className="text-xl font-semibold mb-4 text-gray-800">
             Access Denied
           </h2>
@@ -143,10 +149,7 @@ export default function Dashboard() {
             You are not signed in. Please sign in to access the dashboard.
           </p>
           <Link href="/" className="">
-            <Button
-              color="primary"
-              variant="outlined"
-            >
+            <Button color="primary" variant="outlined">
               Go to Home
             </Button>
           </Link>
@@ -200,7 +203,7 @@ export default function Dashboard() {
         addExpense={(data) => handleOpenModal("expense", data)}
         fetchData={fetchData}
       />
-      {/* Custom Drawer */}
+
       <CustomDrawer
         isDrawerVisible={isDrawerVisible}
         drawerType={drawerType}
@@ -209,8 +212,12 @@ export default function Dashboard() {
         budgets={budgets}
         incomes={incomes}
         fetchData={fetchData}
+        isModalVisible={isModalVisible}
+        modalType={modalType}
+        handleCloseModal={handleCloseModal}
+        getBudgetCategoriesForDropdown={getBudgetCategoriesForDropdown}
       />
-      {/* Custom Modal */}
+
       <CustomModal
         isModalVisible={isModalVisible}
         modalType={modalType}
