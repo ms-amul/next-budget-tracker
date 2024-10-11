@@ -8,18 +8,18 @@ export default function Header() {
   const { data: session, status } = useSession();
 
   return (
-    <div className="bg-slate-900 bg-opacity-10 backdrop-blur-md fixed w-full top-0 left-0 z-[999] md:px-16">
+    <div className="md:px-16">
       <div className="flex justify-between items-center p-2">
-        <div className="flex items-center text-2xl font-bold gradient-text-red">
-          <Image src="/logo.png" width={45} height={45} />
-          Servify
+        <div className="flex items-center text-xl font-bold gradient-text-blue">
+          <img src="/logo.png" className="mix-blend-multiply w-12 h-12" />
+          Servify - Finance manager
         </div>
         {status === "authenticated" ? (
           <div className="flex items-center">
             <img
               src={session?.user?.image}
               alt={session?.user?.name}
-              className="w-12 h-12 rounded-full border-2 p-[1px] hover:p-0 transition-all duration-200 border-red-400"
+              className="w-12 h-12 rounded-xl shadow-lg"
             />
             <Button
               size="large"

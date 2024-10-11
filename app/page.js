@@ -12,7 +12,9 @@ export default function LandingPage() {
     return (
       <div className="flex flex-col h-screen w-full fixed items-center justify-center gap-3 bg-gray-100">
         <Spin size="large" />
-        <p className="text-lg font-semibold text-gray-600">Loading your data!</p>
+        <p className="text-lg font-semibold text-gray-600">
+          Loading your data!
+        </p>
       </div>
     );
   }
@@ -23,12 +25,14 @@ export default function LandingPage() {
   }
 
   return (
-    <section className="flex items-center flex-col mt-28 p-3 select-none pointer-events-none">
+    <section className="flex items-center flex-col p-3 select-none pointer-events-none">
       <div className="flex flex-col text-left">
         <h1 className="text-4xl font-semibold">
-          <span className="gradient-text-red font-semibold">Servify - Manage your Money with AI-Driven Personal</span>
+          <span className="gradient-text-red font-bold">
+            Servify: Manage your Money with AI-Driven Personal
+          </span>
           <br />
-          <span className="text-6xl md:text-8xl text-blue-800 font-bold mt-1 leading-none">
+          <span className="text-6xl md:text-8xl text-blue-800 font-extrabold mt-1 leading-none">
             Finance Manager
           </span>
         </h1>

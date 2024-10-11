@@ -95,14 +95,13 @@ const BudgetSuggestionComponent = ({ income, expenses, budget }) => {
 
       <Modal
         title={
-          <div className="flex items-center">
-            <h1 className="gradient-text-red text-xl font-bold">
-              Powered by...
-              <img
-                src="/gemini.png"
-                className="rounded-lg shadow-sm"
-                alt="gemini"
-              />
+          <div className="flex items-center gap-2 border border-transparent shadow-xl rounded-full border-b-blue-400 p-2">
+            <img src="/logo.png" alt="logo" className="w-10 h-10" />
+            <h1 className="gradient-text-blue text-xl font-bold">
+              Your financial report
+            </h1>
+            <h1 className="gradient-text-red text-sm font-bold">
+              {"<"}Powered by Google Gemini{"/>"}
             </h1>
           </div>
         }
@@ -110,7 +109,13 @@ const BudgetSuggestionComponent = ({ income, expenses, budget }) => {
         onOk={handleClose}
         onCancel={handleClose}
         footer={[
-          <Button key="ok" type="primary" onClick={handleClose}>
+          <Button
+            size="large"
+            color="primary"
+            variant="fill"
+            key="ok"
+            onClick={handleClose}
+          >
             OK
           </Button>,
         ]}
@@ -119,7 +124,10 @@ const BudgetSuggestionComponent = ({ income, expenses, budget }) => {
         {loading ? (
           <div className="text-center">
             <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
+              <span className="visually-hidden flex justify-center items-center flex-col">
+                <img className="w-1/4 mix-blend-multiply" src="/load.gif" alt="Loading...." />
+                <p className="gradient-text-green">Fetching report....</p>
+              </span>
             </div>
           </div>
         ) : (

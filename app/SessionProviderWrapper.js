@@ -9,7 +9,7 @@ const SessionProviderWrapper = ({ children }) => {
       <div className="gradient" />
       <Header />
       <div className="min-h-screen md:px-16">
-        <main className="mt-16">{children}</main>
+        <main className="">{children}</main>
       </div>
     </SessionProvider>
   );
