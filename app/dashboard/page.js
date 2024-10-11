@@ -52,33 +52,43 @@ export default function Dashboard() {
 
   const fetchData = async () => {
     try {
-      
-      const [budgetRes, incomeRes, expenseRes] = await Promise.all([
+      const [budgetRes, incomeRes, expenseRes] = await Promise.allSettled([
         fetch("/api/budget"),
         fetch("/api/income"),
         fetch("/api/expense"),
       ]);
-
-      const budgetsData = await budgetRes.json();
-      const incomesData = await incomeRes.json();
-      const expensesData = await expenseRes.json();
-      console.log(expensesData);
-      console.log(budgetsData);
-
+  
+      const budgetsData =
+        budgetRes.status === "fulfilled" ? await budgetRes.value.json() : [];
+      const incomesData =
+        incomeRes.status === "fulfilled" ? await incomeRes.value.json() : [];
+      const expensesData =
+        expenseRes.status === "fulfilled" ? await expenseRes.value.json() : [];
+  
+      if (budgetRes.status === "rejected") {
+        console.error("Failed to fetch budgets:", budgetRes.reason);
+      }
+      if (incomeRes.status === "rejected") {
+        console.error("Failed to fetch incomes:", incomeRes.reason);
+      }
+      if (expenseRes.status === "rejected") {
+        console.error("Failed to fetch expenses:", expenseRes.reason);
+      }
+  
       setBudgets(budgetsData);
       setIncomes(incomesData);
       setExpenses(expensesData);
-
+  
       const currentMonth = new Date().getMonth();
       const currentYear = new Date().getFullYear();
-
+  
       const isCurrentMonth = (dateString) => {
         const date = new Date(dateString);
         return (
           date.getMonth() === currentMonth && date.getFullYear() === currentYear
         );
       };
-
+  
       const totalBudget = budgetsData.reduce(
         (acc, budget) =>
           isCurrentMonth(budget.createdAt) ? acc + budget.amount : acc,
@@ -94,12 +104,13 @@ export default function Dashboard() {
           isCurrentMonth(expense.createdAt) ? acc + expense.amount : acc,
         0
       );
-
+  
       setMonthlyTotals({ totalBudget, totalIncome, totalExpenses });
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+  
 
   const getBudgetCategoriesForDropdown = (selectedMonth) => {
     const formattedMonth = selectedMonth.format("MMMM YYYY");
