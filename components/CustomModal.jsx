@@ -13,43 +13,34 @@ const CustomModal = ({
   fetchData,
 }) => {
   return (
-    <>
-      <Modal
-        open={isModalVisible}
-        onCancel={handleCloseModal}
-        footer={null}
-        className="custom-modal"
-      >
-        {modalType.type === "budget" && (
-          <Budget
-            budget={budgets}
-            fetchData={fetchData}
-            editData={modalType.data}
-          />
-        )}
-        {modalType.type === "income" && (
-          <Income
-            income={incomes}
-            fetchData={fetchData}
-            editData={modalType.data}
-          />
-        )}
-      </Modal>
-      {modalType.type === "expense" && (
-        <Modal
-          open={isModalVisible}
-          onCancel={handleCloseModal}
-          footer={null}
-          className="custom-modal"
-        >
-          <Expense
-            getCategories={getBudgetCategoriesForDropdown}
-            fetchData={fetchData}
-            editData={modalType.data}
-          />
-        </Modal>
+    <Modal
+      open={isModalVisible}
+      onCancel={handleCloseModal}
+      footer={null}
+      className="custom-modal"
+    >
+      {modalType.type === "budget" && (
+        <Budget
+          budget={budgets}
+          fetchData={fetchData}
+          editData={modalType.data}
+        />
       )}
-    </>
+      {modalType.type === "income" && (
+        <Income
+          income={incomes}
+          fetchData={fetchData}
+          editData={modalType.data}
+        />
+      )}
+      {modalType.type === "expense" && (
+        <Expense
+          getCategories={getBudgetCategoriesForDropdown}
+          fetchData={fetchData}
+          editData={modalType.data}
+        />
+      )}
+    </Modal>
   );
 };
 

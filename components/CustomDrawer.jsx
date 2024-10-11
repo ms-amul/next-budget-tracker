@@ -63,7 +63,10 @@ const CustomDrawer = ({
     >
       <div className="flex justify-between items-center mb-4">
         {isCurrentMonth ? (
-          <Button type="primary" onClick={() => handleOpenModal(drawerType)}>
+          <Button type="primary" onClick={() => {
+            handleCloseDrawer();
+            handleOpenModal(drawerType);
+          }}>
             Add {drawerType === "budget" ? "Budget" : "Income"}
           </Button>
         ) : (
@@ -99,6 +102,7 @@ const CustomDrawer = ({
                 budget={budget}
                 fetchData={fetchData}
                 editData={() => {
+                  handleCloseDrawer();
                   handleOpenModal(drawerType, budget);
                 }}
               />
@@ -114,7 +118,10 @@ const CustomDrawer = ({
                     <Button
                       type="primary"
                       shape="round"
-                      onClick={() => handleOpenModal(drawerType)}
+                      onClick={() => {
+                        handleCloseDrawer();
+                        handleOpenModal(drawerType);
+                      }}
                     >
                       Add 1st {drawerType === "budget" ? "Budget" : "Income"}
                     </Button>
@@ -135,6 +142,7 @@ const CustomDrawer = ({
                 income={income}
                 fetchData={fetchData}
                 editData={() => {
+                  handleCloseDrawer();
                   handleOpenModal(drawerType, income);
                 }}
               />
@@ -150,7 +158,10 @@ const CustomDrawer = ({
                     <Button
                       type="primary"
                       shape="round"
-                      onClick={() => handleOpenModal(drawerType)}
+                      onClick={() => {
+                        handleCloseDrawer();
+                        handleOpenModal(drawerType);
+                      }}
                     >
                       Add 1st {drawerType === "budget" ? "Budget" : "Income"}
                     </Button>
