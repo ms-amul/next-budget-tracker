@@ -12,8 +12,13 @@ import CustomDrawer from "@/components/CustomDrawer";
 import CustomModal from "@/components/CustomModal";
 import dayjs from "dayjs";
 import GeminiModal from "@/components/GeminiSuggestion";
+import { useRouter } from "next/navigation";
+
 
 export default function Dashboard() {
+
+  const router = useRouter();
+
 
   const { data: session, status } = useSession();
   const [monthlyTotals, setMonthlyTotals] = useState({
@@ -144,28 +149,8 @@ export default function Dashboard() {
   }
 
   if (status === "unauthenticated") {
-    return (
-      <div className="flex items-center justify-center min-h-[90vh]">
-        <div className="rounded-lg p-8 max-w-xl w-full text-center">
-          <img
-            src="/load.gif"
-            alt="loading.."
-            className="mix-blend-multiply rounded-xl"
-          />
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">
-            Access Denied
-          </h2>
-          <p className="text-gray-600 mb-6">
-            You are not signed in. Please sign in to access the dashboard.
-          </p>
-          <Link href="/" className="">
-            <Button color="primary" variant="outlined">
-              Go to Home
-            </Button>
-          </Link>
-        </div>
-      </div>
-    );
+    router.push("/");
+    return null;
   }
 
   return (
