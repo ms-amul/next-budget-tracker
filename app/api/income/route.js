@@ -17,15 +17,24 @@ export async function POST(req) {
 
   try {
     const user = await User.findOne({ email: session.user.email });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const newIncome = await Income.create({
       name,
       amount,
       icon,
       createdBy: user._id,
     });
+
     return NextResponse.json(newIncome, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error("Error creating income:", error.message);
+    return NextResponse.json(
+      { error: "Error creating income" },
+      { status: 400 }
+    );
   }
 }
 
@@ -40,10 +49,18 @@ export async function GET(req) {
 
   try {
     const user = await User.findOne({ email: session.user.email });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const incomes = await Income.find({ createdBy: user._id });
     return NextResponse.json(incomes, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error("Error fetching incomes:", error.message);
+    return NextResponse.json(
+      { error: "Error fetching incomes" },
+      { status: 400 }
+    );
   }
 }
 
@@ -60,14 +77,30 @@ export async function PUT(req) {
 
   try {
     const user = await User.findOne({ email: session.user.email });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const updatedIncome = await Income.findOneAndUpdate(
       { _id: id, createdBy: user._id },
       { name, amount, icon },
       { new: true }
     );
+
+    if (!updatedIncome) {
+      return NextResponse.json(
+        { error: "Income not found or unauthorized" },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(updatedIncome, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error("Error updating income:", error.message);
+    return NextResponse.json(
+      { error: "Error updating income" },
+      { status: 400 }
+    );
   }
 }
 
@@ -84,9 +117,28 @@ export async function DELETE(req) {
 
   try {
     const user = await User.findOne({ email: session.user.email });
-    await Income.findOneAndDelete({ _id: id, createdBy: user._id });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const deletedIncome = await Income.findOneAndDelete({
+      _id: id,
+      createdBy: user._id,
+    });
+
+    if (!deletedIncome) {
+      return NextResponse.json(
+        { error: "Income not found or unauthorized" },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json({ message: "Income deleted" }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error("Error deleting income:", error.message);
+    return NextResponse.json(
+      { error: "Error deleting income" },
+      { status: 400 }
+    );
   }
 }

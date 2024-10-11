@@ -12,6 +12,7 @@ import {
   PointElement,
   Title,
   Tooltip,
+  Filler
 } from "chart.js";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
@@ -25,7 +26,8 @@ ChartJS.register(
   PointElement, // Register PointElement for line chart points
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
 
 const { MonthPicker } = DatePicker;

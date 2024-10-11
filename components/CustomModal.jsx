@@ -14,7 +14,7 @@ const CustomModal = ({
 }) => {
   return (
     <Modal
-      visible={isModalVisible}
+      open={isModalVisible}
       onCancel={handleCloseModal}
       footer={null}
       className="custom-modal"

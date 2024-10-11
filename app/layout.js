@@ -9,7 +9,7 @@ export const metadata = {
   manifest: "/manifest.json",
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
   return (
     <html lang="en">
       <Head>

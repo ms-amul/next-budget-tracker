@@ -105,7 +105,7 @@ const BudgetSuggestionComponent = ({ income, expenses, budget }) => {
             </h1>
           </div>
         }
-        visible={isModalVisible}
+        open={isModalVisible}
         onOk={handleClose}
         onCancel={handleClose}
         footer={[

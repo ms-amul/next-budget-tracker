@@ -17,15 +17,24 @@ export async function POST(req) {
 
   try {
     const user = await User.findOne({ email: session.user.email });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const newBudget = await Budget.create({
       name,
       amount,
       icon,
       createdBy: user._id,
     });
+
     return NextResponse.json(newBudget, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error("Error creating budget:", error.message);
+    return NextResponse.json(
+      { error: "Error creating budget" },
+      { status: 400 }
+    );
   }
 }
 
@@ -40,12 +49,19 @@ export async function GET(req) {
 
   try {
     const user = await User.findOne({ email: session.user.email });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const budgets = await Budget.find({ createdBy: user._id });
-    // // Repeat the budgets array 100 times
-    // let repeatedBudgets = Array(100).fill(budgets).flat();
+
     return NextResponse.json(budgets, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error("Error fetching budgets:", error.message);
+    return NextResponse.json(
+      { error: "Error fetching budgets" },
+      { status: 400 }
+    );
   }
 }
 
@@ -62,14 +78,30 @@ export async function PUT(req) {
 
   try {
     const user = await User.findOne({ email: session.user.email });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const updatedBudget = await Budget.findOneAndUpdate(
       { _id: id, createdBy: user._id },
       { name, amount, icon },
       { new: true }
     );
+
+    if (!updatedBudget) {
+      return NextResponse.json(
+        { error: "Budget not found or unauthorized" },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(updatedBudget, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error("Error updating budget:", error.message);
+    return NextResponse.json(
+      { error: "Error updating budget" },
+      { status: 400 }
+    );
   }
 }
 
@@ -85,26 +117,32 @@ export async function DELETE(req) {
   const { id } = await req.json();
 
   try {
-    // Fetch the user associated with the session
     const user = await User.findOne({ email: session.user.email });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
 
-    // Find and delete the budget (this will also trigger the middleware to delete related expenses)
     const budget = await Budget.findOneAndDelete({
       _id: id,
       createdBy: user._id,
     });
+
     if (!budget) {
       return NextResponse.json(
         { error: "Budget not found or unauthorized" },
         { status: 404 }
       );
     }
+
     return NextResponse.json(
       { message: "Budget and associated expenses deleted" },
       { status: 200 }
     );
   } catch (error) {
-    // Handle any errors that occur during the deletion process
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error("Error deleting budget:", error.message);
+    return NextResponse.json(
+      { error: "Error deleting budget" },
+      { status: 400 }
+    );
   }
 }

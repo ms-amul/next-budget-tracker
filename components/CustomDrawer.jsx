@@ -57,8 +57,9 @@ const CustomDrawer = ({
       title={drawerType === "budget" ? "Budgets" : "Incomes"}
       placement="right"
       onClose={handleCloseDrawer}
-      visible={isDrawerVisible}
+      open={isDrawerVisible}
       width={400}
+      className="custom-drawer"
     >
       <div className="flex justify-between items-center mb-4">
         {isCurrentMonth ? (

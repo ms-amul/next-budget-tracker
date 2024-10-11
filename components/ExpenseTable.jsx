@@ -45,7 +45,7 @@ export default function Dashboard({
     }
   };
 
-  // Helper function to filter expenses by selected month
+  // Helper function to filter and sort expenses by selected month
   const filterByMonth = (month) => {
     if (!month) {
       setFilteredExpenses(expenses);
@@ -57,7 +57,13 @@ export default function Dashboard({
         dayjs(expense.createdAt).format("MMMM YYYY") ===
         month.format("MMMM YYYY")
     );
-    setFilteredExpenses(filtered);
+
+    // Sort the filtered expenses by createdAt in descending order
+    const sorted = filtered.sort((a, b) => {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+
+    setFilteredExpenses(sorted);
   };
 
   // Handle month filter change
@@ -76,7 +82,13 @@ export default function Dashboard({
     const filtered = expenses.filter(
       (expense) => expense.budgetId._id === categoryId
     );
-    setFilteredExpenses(filtered);
+
+    // Sort the filtered expenses by createdAt in descending order
+    const sorted = filtered.sort((a, b) => {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+
+    setFilteredExpenses(sorted);
     setSelectedCategory(categoryId);
   };
 
@@ -88,6 +100,11 @@ export default function Dashboard({
   };
 
   useEffect(() => {
+    // Sort initial expenses by createdAt in descending order
+    const sortedExpenses = expenses.sort((a, b) => {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+    setFilteredExpenses(sortedExpenses);
     setSelectedMonth(dayjs());
     filterByMonth(dayjs());
     setSelectedCategory(null);
@@ -193,7 +210,7 @@ export default function Dashboard({
               description={
                 <div className="text-center">
                   <p className="mb-3 gradient-text-blue">
-                    No expenses found for {selectedMonth.format("MMMM YYYY")} .
+                    No expenses found for {selectedMonth.format("MMMM YYYY")}.
                   </p>
                   {isCurrentMonth && (
                     <Button
