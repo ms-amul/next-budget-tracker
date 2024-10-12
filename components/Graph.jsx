@@ -96,8 +96,8 @@ export default function MonthlyExpenseGraph({ expenses, budgets }) {
         backgroundColor: "rgba(75, 192, 192, 0.5)",
         borderWidth: 2,
         fill: true, // Filling under the line to give better visual impact
-        pointBackgroundColor: "rgba(255, 54, 97, 0.7)", // Point color
-        pointRadius: 6, // Make points more visible
+        pointBackgroundColor: "rgba(255, 54, 97, 0.5)", // Point color
+        pointRadius: 7, // Make points more visible
       },
       {
         label: "Budget (₹)",
@@ -146,10 +146,7 @@ export default function MonthlyExpenseGraph({ expenses, budgets }) {
         <BiSolidCommentError />
         <h3 className="gradient-text-green font-semibold">
           Remaining Budget: ₹{" "}
-          {totalBudget -
-            (dailyExpenses.length > 0
-              ? dailyExpenses[dailyExpenses.length - 1].total
-              : 0)}
+          {totalBudget - (dailyExpenses.length > 0 ? dailyExpenses[dailyExpenses.length - 1].total : 0)}
         </h3>
 
         <MonthPicker
@@ -160,9 +157,11 @@ export default function MonthlyExpenseGraph({ expenses, budgets }) {
         />
       </div>
 
-      <div style={{ width: "100%", height: "500px" }}>
-        {" "}
-        <Line data={chartData} options={chartOptions} />
+      {/* Added class for scrolling */}
+      <div style={{ width: "100%", overflowX: "auto" }}>
+        <div style={{ minWidth: "800px", height: "500px" }}> {/* Adjust minWidth as needed */}
+          <Line data={chartData} options={chartOptions} />
+        </div>
       </div>
     </div>
   );

@@ -170,7 +170,7 @@ export default function Dashboard() {
         {/* Budget Card */}
         <NeumorphicCard
           title="Budget"
-          amount={`₹${monthlyTotals.totalBudget}`}
+          amount={monthlyTotals.totalBudget}
           icon={<GiWallet />}
           onEyeClick={() => handleOpenDrawer("budget")}
         />
@@ -178,7 +178,7 @@ export default function Dashboard() {
         {/* Income Card */}
         <NeumorphicCard
           title="Income"
-          amount={`₹${monthlyTotals.totalIncome}`}
+          amount={monthlyTotals.totalIncome}
           icon={<FaMoneyBillTrendUp />}
           onEyeClick={() => handleOpenDrawer("income")}
         />
@@ -186,7 +186,7 @@ export default function Dashboard() {
         {/* Expenses Card */}
         <NeumorphicCard
           title="Expenses"
-          amount={`₹${monthlyTotals.totalExpenses}`}
+          amount={monthlyTotals.totalExpenses}
           icon={<GiExpense />}
           onEyeClick={() => handleOpenModal("expense")}
         />

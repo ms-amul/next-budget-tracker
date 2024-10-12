@@ -1,8 +1,34 @@
 "use client";
 import { Card } from "antd";
 import { FaEye } from "react-icons/fa6";
+import { useEffect, useState } from "react";
 
 const NeumorphicCard = ({ title, amount, icon, onEyeClick }) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const end = Number(amount);
+
+    let start = 0;
+    const duration = 1500;
+    const incrementTime = 30;
+    const totalSteps = Math.floor(duration / incrementTime);
+    const incrementValue = Math.ceil(end / totalSteps);
+
+    const timer = setInterval(() => {
+      start += incrementValue; // Increment the count
+      if (start >= end) {
+        clearInterval(timer); // Clear the timer if we reach the end
+        setCount(end); // Ensure the count ends at the exact amount
+      } else {
+        setCount(start); // Update the count
+      }
+    }, incrementTime);
+
+    // Cleanup function to clear the timer
+    return () => clearInterval(timer);
+  }, [amount]); // Dependency on amount to reset the count when it changes
+
   return (
     <Card className="bg-light-bg shadow-neumorphic rounded-lg p-1 m-2 flex-1">
       <div className="flex justify-between items-center">
@@ -17,7 +43,7 @@ const NeumorphicCard = ({ title, amount, icon, onEyeClick }) => {
               {title}
             </h2>
             <p className="text-3xl md:text-4xl font-bold gradient-text-blue m-0">
-              {amount}
+              ₹{count} {/* Display the animated count */}
             </p>
           </div>
         </div>
