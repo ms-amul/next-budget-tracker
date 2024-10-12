@@ -125,9 +125,24 @@ export default function Dashboard({
       </div>
       <Table
         dataSource={filteredExpenses}
+        pagination={false}
         columns={[
-          { title: "Name", dataIndex: "name", key: "name" },
-          { title: "Amount", dataIndex: "amount", key: "amount" },
+          { title: "Name", dataIndex: "name", key: "name", fixed: 'left' },
+          {
+            title: (
+              <div>
+                Amount (₹{" "}
+                {filteredExpenses.reduce(
+                  (total, expense) => total + (expense.amount || 0),
+                  0
+                )}
+                )
+              </div>
+            ),
+            dataIndex: "amount",
+            key: "amount",
+            render: (amount) => `₹ ${amount}`, // Optionally format the amount
+          },
           {
             title: (
               <div>

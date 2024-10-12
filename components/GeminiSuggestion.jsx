@@ -1,10 +1,9 @@
-import React, { useState } from "react";
-import { Modal, Button } from "antd";
-import "antd/dist/reset.css";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { AiOutlineInfoCircle } from "react-icons/ai";
-import ReactMarkdown from "react-markdown";
+import { Button, Modal } from "antd";
+import "antd/dist/reset.css";
+import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import ReactMarkdown from "react-markdown";
 
 const filterCurrentMonthData = (items) => {
   const currentDate = new Date();
@@ -97,11 +96,12 @@ const BudgetSuggestionComponent = ({ income, expenses, budget }) => {
         title={
           <div className="flex items-center gap-2 border border-transparent shadow-xl rounded-full border-b-blue-400 p-2">
             <img src="/logo.png" alt="logo" className="w-10 h-10" />
-            <h1 className="gradient-text-blue text-xl font-bold">
+            <h1 className="gradient-text-blue text-lg md:text-xl font-bold m-0">
               Your financial report
-            </h1>
-            <h1 className="gradient-text-red text-sm font-bold">
-              {"<"}Powered by Google Gemini{"/>"}
+              <br />
+              <span className="gradient-text-red text-xs font-semibold m-0">
+                {"<"}Powered by Google Gemini{"/>"}
+              </span>
             </h1>
           </div>
         }
@@ -125,7 +125,11 @@ const BudgetSuggestionComponent = ({ income, expenses, budget }) => {
           <div className="text-center">
             <div className="spinner-border text-primary" role="status">
               <span className="visually-hidden flex justify-center items-center flex-col">
-                <img className="w-1/4 mix-blend-multiply" src="/load.gif" alt="Loading...." />
+                <img
+                  className="mix-blend-multiply"
+                  src="/load.gif"
+                  alt="Loading...."
+                />
                 <p className="gradient-text-green">Fetching report....</p>
               </span>
             </div>

@@ -1,7 +1,7 @@
 {
   "name": "Servify",
-  "short_name": "BudgetTracker",
-  "description": "A AI budget tracker app",
+  "short_name": "Servify",
+  "description": "An AI budget tracker app",
   "icons": [
     {
       "src": "/favicon.ico"
@@ -10,6 +10,6 @@
   "scope": "/",
   "start_url": "/",
   "background_color": "#ffffff",
-  "theme_color": "#317EFB",
+  "theme_color": "#EAF5FF",
   "display": "standalone"
 }

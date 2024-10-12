@@ -7,10 +7,10 @@ export default function Header() {
   const { data: session, status } = useSession();
 
   return (
-    <div className="md:px-16 shadow-md rounded-3xl">
-      <div className="flex justify-between items-center p-2 rounded-2xl">
+    <div className="md:px-16 rounded-3xl header">
+      <div className="flex justify-between items-center p-2">
         <div className="flex items-center text-xl font-bold gradient-text-blue">
-          <img src="/logo.png" className="mix-blend-multiply w-12 h-12 scale-110" />
+          <img src="/logo.png" className="mix-blend-darken w-14 h-14" />
           Servify<span className="hidden md:block"> - Finance manager</span>
         </div>
         {status === "authenticated" ? (

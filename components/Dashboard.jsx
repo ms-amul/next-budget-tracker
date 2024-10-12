@@ -166,7 +166,7 @@ export default function Dashboard() {
       </div>
       <GeminiModal income={incomes} budget={budgets} expenses={expenses} />
 
-      <div className="flex flex-wrap justify-center">
+      <div className="flex flex-wrap justify-center quickcards">
         {/* Budget Card */}
         <NeumorphicCard
           title="Budget"

@@ -12,7 +12,7 @@ import {
   PointElement,
   Title,
   Tooltip,
-  Filler
+  Filler,
 } from "chart.js";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
@@ -64,10 +64,13 @@ export default function MonthlyExpenseGraph({ expenses, budgets }) {
     });
 
     const dailyData = [];
+    let runningTotal = 0; // To accumulate expenses day by day (prefix sum)
+
     for (let i = 1; i <= selectedMonth.daysInMonth(); i++) {
+      runningTotal += dailyExpenseMap[i] || 0;
       dailyData.push({
         day: i,
-        total: dailyExpenseMap[i] || 0,
+        total: runningTotal, // Now each day is the cumulative sum of the previous days
       });
     }
 
@@ -90,17 +93,17 @@ export default function MonthlyExpenseGraph({ expenses, budgets }) {
         label: "Total Expense (₹)",
         data: dailyExpenses.map((data) => data.total),
         borderColor: "rgba(75, 192, 192, 1)",
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        backgroundColor: "rgba(75, 192, 192, 0.5)",
         borderWidth: 2,
         fill: true, // Filling under the line to give better visual impact
-        pointBackgroundColor: "rgba(255, 99, 132, 0.7)", // Point color
-        pointRadius: 4, // Make points more visible
+        pointBackgroundColor: "rgba(255, 54, 97, 0.7)", // Point color
+        pointRadius: 6, // Make points more visible
       },
       {
         label: "Budget (₹)",
         data: dailyExpenses.map(() => totalBudget),
-        borderColor: "rgba(255, 165, 0, 1)",
-        backgroundColor: "rgba(255, 165, 0, 0.2)",
+        borderColor: "rgba(255, 119, 0, 1)",
+        backgroundColor: "rgba(255, 119, 0, 0.2)",
         borderWidth: 2,
         fill: false,
         borderDash: [10, 5], // Dashed line for budget
@@ -140,12 +143,15 @@ export default function MonthlyExpenseGraph({ expenses, budgets }) {
   return (
     <div>
       <div className="flex items-baseline gap-2 justify-end">
-      <BiSolidCommentError />
+        <BiSolidCommentError />
         <h3 className="gradient-text-green font-semibold">
-           Remaining Budget: ₹{" "}
+          Remaining Budget: ₹{" "}
           {totalBudget -
-            dailyExpenses.reduce((sum, data) => sum + data.total, 0)}
+            (dailyExpenses.length > 0
+              ? dailyExpenses[dailyExpenses.length - 1].total
+              : 0)}
         </h3>
+
         <MonthPicker
           onChange={handleMonthChange}
           value={selectedMonth}

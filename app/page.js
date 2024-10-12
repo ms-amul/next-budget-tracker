@@ -26,7 +26,7 @@ export default function LandingPage() {
 
   return (
     <section className="flex items-center flex-col p-3 select-none pointer-events-none">
-      <div className="flex flex-col text-left">
+      <div className="flex flex-col text-left home">
         <h1 className="text-4xl font-semibold">
           <span className="gradient-text-red font-bold">
             Servify: Manage your Money with AI-Driven Personal
