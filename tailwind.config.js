@@ -8,11 +8,10 @@ module.exports = {
   theme: {
     extend: {
       boxShadow: {
-        'neumorphic': '8px 8px 16px #d1d9e6, -8px -8px 16px white',
+        neumorphic: "",
       },
       colors: {
-        'light-bg': '#e0e5ec78',
-        'light-text': '#6b7280',
+        "light-bg": "#180a0a7a",
       },
     },
   },

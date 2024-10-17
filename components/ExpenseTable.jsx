@@ -125,7 +125,6 @@ export default function Dashboard({
       </div>
       <Table
         dataSource={filteredExpenses}
-        pagination={false}
         columns={[
           { title: "Name", dataIndex: "name", key: "name", fixed: 'left' },
           {

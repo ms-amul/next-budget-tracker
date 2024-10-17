@@ -88,6 +88,7 @@ const BudgetSuggestionComponent = ({ income, expenses, budget }) => {
         variant="outlined"
         onClick={showModal}
         icon={<FcGoogle />}
+        className="mb-3 text-cyan-300"
       >
         Get AI Suggestion
       </Button>

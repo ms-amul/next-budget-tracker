@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 html {
-  background-color: white;
+  background-color: black;
 }
 ::selection{
-  background-color: rgba(78, 6, 202, 0.2);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 html::-webkit-scrollbar{
   display: none;
@@ -47,7 +47,27 @@ body{
   right: 30px;
   opacity: 0.15;
 }
-
+.gradient-text-Budget{
+  background: linear-gradient(to right, rgb(66, 246, 228), rgb(80, 154, 229));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+.gradient-text-Income{
+  background: linear-gradient(to left, rgb(14, 211, 233), rgb(75, 236, 0));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+.gradient-text-Expenses{
+  background: linear-gradient(45deg, red, orange);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
 .gradient-text-red {
   background: linear-gradient(45deg, red, orange);
   -webkit-background-clip: text;
@@ -56,14 +76,14 @@ body{
   color: transparent;
 }
 .gradient-text-blue {
-  background: linear-gradient(to right, rgb(1, 99, 121), rgb(94, 1, 170));
+  background: linear-gradient(to right, rgb(66, 213, 246), rgb(215, 94, 255));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   color: transparent;
 }
 .gradient-text-green {
-  background: linear-gradient(to left, rgb(2, 68, 150), rgb(55, 170, 1));
+  background: linear-gradient(to left, rgb(14, 211, 233), rgb(75, 236, 0));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -82,19 +102,19 @@ body{
 }
 
 .quickcards .Budget {
-  background-image: radial-gradient(rgba(0, 255, 255, 0.2), rgba(0, 0, 255, 0.2));
-  color: blue;
-  border: 2px solid blue;
+  background-image: radial-gradient(rgba(0, 255, 255, 0.2), rgba(0, 94, 255, 0.2));
+  color: rgb(45, 181, 255);
+  border: 2px solid rgb(0, 140, 255);
 }
 
 .quickcards .Income {
   background-image: radial-gradient(rgba(0, 255, 0, 0.2), rgba(0, 128, 0, 0.2));
-  color: rgb(0, 96, 0);
-  border: 2px solid rgb(0, 96, 0);
+  color: rgb(0, 255, 0);
+  border: 2px solid rgb(0, 185, 0);
 }
 
 .quickcards .Expenses {
   background-image: radial-gradient(rgba(255, 166, 0, 0.2), rgba(255, 0, 0, 0.2));
-  color: red;
+  color: rgb(255, 22, 22);
   border: 2px solid red;
 }

@@ -93,11 +93,11 @@ export default function MonthlyExpenseGraph({ expenses, budgets }) {
         label: "Total Expense (₹)",
         data: dailyExpenses.map((data) => data.total),
         borderColor: "rgba(75, 192, 192, 1)",
-        backgroundColor: "rgba(75, 192, 192, 0.5)",
-        borderWidth: 2,
+        backgroundColor: "rgba(75, 192, 192, 0.15)",
+        borderWidth: 1,
         fill: true, // Filling under the line to give better visual impact
         pointBackgroundColor: "rgba(255, 54, 97, 0.5)", // Point color
-        pointRadius: 7, // Make points more visible
+        pointRadius: 4, // Make points more visible
       },
       {
         label: "Budget (₹)",
@@ -142,8 +142,8 @@ export default function MonthlyExpenseGraph({ expenses, budgets }) {
 
   return (
     <div>
-      <div className="flex items-baseline gap-2 justify-end">
-        <BiSolidCommentError />
+      <div className="flex items-baseline gap-2 justify-end mt-4">
+        <BiSolidCommentError className="text-slate-100" />
         <h3 className="gradient-text-green font-semibold">
           Remaining Budget: ₹{" "}
           {totalBudget - (dailyExpenses.length > 0 ? dailyExpenses[dailyExpenses.length - 1].total : 0)}

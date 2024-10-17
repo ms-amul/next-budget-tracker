@@ -22,18 +22,18 @@ const IncomeCard = ({ income, editData, fetchData }) => {
   };
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-md my-4 hover:shadow-lg transition-shadow duration-300">
+    <div className="p-4 bg-slate-900 rounded-lg shadow-md my-4 hover:shadow-lg transition-shadow duration-300">
       <div className="flex items-center mb-4">
-        <div className="w-8 h-8 mr-3 flex items-center justify-center bg-gray-200 rounded-full">
+        <div className="w-8 h-8 mr-3 flex items-center justify-center bg-slate-950 rounded-full">
           {income.icon ? (
             <span className="text-2xl rounded-full">{income.icon}</span>
           ) : (
-            <RiMoneyDollarCircleFill className="text-gray-500 text-xl" />
+            <RiMoneyDollarCircleFill className="text-gray-200 text-xl" />
           )}
         </div>
         <div className="flex justify-between w-full">
-          <h3 className="text-lg font-semibold text-gray-800">{income.name}</h3>
-          <span className="text-gray-600 font-medium">₹{income.amount}</span>
+          <h3 className="text-lg font-semibold text-slate-100">{income.name}</h3>
+          <span className="text-gray-200 font-medium">₹{income.amount}</span>
         </div>
       </div>
       <div className="flex justify-end space-x-4">

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import Budget from './Budget'; // Import the Budget model
 
 const ExpenseSchema = new mongoose.Schema({
   name: { type: String, required: true },

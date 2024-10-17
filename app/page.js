@@ -32,7 +32,7 @@ export default function LandingPage() {
             Servify: Manage your Money with AI-Driven Personal
           </span>
           <br />
-          <span className="text-6xl md:text-8xl text-blue-800 font-extrabold mt-1 leading-none">
+          <span className="text-6xl md:text-8xl text-blue-400 font-extrabold mt-1 leading-none">
             Finance Manager
           </span>
         </h1>
@@ -41,7 +41,7 @@ export default function LandingPage() {
           alt="hero"
           height={720}
           width={1400}
-          className="mx-auto rounded-2xl object-cover h-full mt-10 mix-blend-multiply"
+          className="mx-auto rounded-2xl object-cover h-full mt-10 border-8 border-slate-500"
         />
       </div>
     </section>

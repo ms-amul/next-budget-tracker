@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import connectMongo from "@/lib/mongo";
+import Budget from "@/models/Budget";
 import Expense from "@/models/Expense";
 import { getServerSession } from "next-auth/next";
 import User from "@/models/User";

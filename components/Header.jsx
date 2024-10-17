@@ -1,7 +1,7 @@
-import { Button } from "antd";
+import { Button, Popconfirm } from "antd";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
-import { LiaSignOutAltSolid } from "react-icons/lia";
+import { MdLockPerson } from "react-icons/md";
 
 export default function Header() {
   const { data: session, status } = useSession();
@@ -9,8 +9,8 @@ export default function Header() {
   return (
     <div className="md:px-16 rounded-3xl header">
       <div className="flex justify-between items-center p-2">
-        <div className="flex items-center text-xl font-bold gradient-text-blue">
-          <img src="/logo.png" className="mix-blend-darken w-14 h-14" />
+        <div className="flex items-center text-xl font-bold gradient-text-blue select-none pointer-events-none">
+          <img src="/logo.png" className="w-14 h-14" />
           Servify<span className="hidden md:block"> - Finance manager</span>
         </div>
         {status === "authenticated" ? (
@@ -20,16 +20,21 @@ export default function Header() {
               alt={session?.user?.name}
               className="w-12 h-12 rounded-xl shadow-lg"
             />
-            <Button
-              size="large"
-              color="danger"
-              variant="fill"
-              onClick={() => signOut()}
-              className="ml-4 border flex items-center font-semibold"
+            <Popconfirm
+              title="Are you sure you want to sign out?"
+              onConfirm={() => signOut()}
+              okText="Yes"
+              cancelText="No"
             >
-              <LiaSignOutAltSolid />
-              Sign out
-            </Button>
+              <Button
+                color="danger"
+                size="large"
+                variant="fill"
+                className="ml-4 border flex items-center font-semibold"
+              >
+                <MdLockPerson /> Logout
+              </Button>
+            </Popconfirm>
           </div>
         ) : (
           <>
@@ -38,10 +43,10 @@ export default function Header() {
               variant="fill"
               size="large"
               onClick={() => signIn("google")}
-              className="flex items-center font-bold"
+              className="flex items-center font-bold text-cyan-200"
             >
               <FcGoogle />
-              Sign In
+              Log In
             </Button>
           </>
         )}
