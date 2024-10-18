@@ -13,7 +13,7 @@ const SessionProviderWrapper = ({ children }) => {
         <div className="min-h-screen md:px-16">
           <main className="">{children}</main>
         </div>
-        <p className="text-center text-slate-200 text-lg mt-3 p-4">Made with ❤️ by @RAJGOPAL HOTA</p>
+        <p className="text-center text-slate-500 text-lg mt-3 p-4 font-semibold">Made with ❤️ by <a href="https://rajgopal.in/" target="_blank">@RAJGOPAL HOTA</a></p>
       </ConfigProvider>
     </SessionProvider>
   );

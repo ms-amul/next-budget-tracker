@@ -68,6 +68,13 @@ body{
   background-clip: text;
   color: transparent;
 }
+.gradient-text-white {
+  background: linear-gradient(45deg, rgb(157, 229, 220), rgb(236, 189, 118));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
 .gradient-text-red {
   background: linear-gradient(45deg, red, orange);
   -webkit-background-clip: text;
@@ -98,7 +105,7 @@ body{
 }
 
 .ss{
-  color: rgba(255, 119, 0, 0.2);
+  color: #000000;
 }
 
 .quickcards .Budget {

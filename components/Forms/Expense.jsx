@@ -26,7 +26,7 @@ export default function Expense({ getCategories, fetchData, editData }) {
         amount: editData.amount,
         categoryId: editData.budgetId._id,
       });
-    } else{
+    } else {
       form.setFieldsValue({
         name: "",
         amount: "",
@@ -47,7 +47,7 @@ export default function Expense({ getCategories, fetchData, editData }) {
 
     try {
       const method = editData ? "PUT" : "POST";
-      if(editData){
+      if (editData) {
         expenseData.id = editData._id;
       }
 
@@ -61,7 +61,11 @@ export default function Expense({ getCategories, fetchData, editData }) {
 
       if (res.ok) {
         console.log(res);
-        message.success(editData ? "Expense updated successfully!" : "Expense added successfully!"); // Success notification
+        message.success(
+          editData
+            ? "Expense updated successfully!"
+            : "Expense added successfully!"
+        ); // Success notification
         form.resetFields();
         fetchData();
       } else {
@@ -76,9 +80,10 @@ export default function Expense({ getCategories, fetchData, editData }) {
   };
 
   return (
-    <div className="container mx-auto max-w-md p-6 shadow-lg bg-light-bg rounded-lg">
-      <h1 className="gradient-text-blue text-xl font-semibold mb-6">
-        {editData ? "Edit Your Expense" : "Add Your Expense"} {/* Dynamic Title */}
+    <div className="">
+      <h1 className="gradient-text-blue text-xl font-bold mb-6">
+        {editData ? "Edit Your Expense" : "Add Your Expense"}{" "}
+        {/* Dynamic Title */}
       </h1>
 
       <Form
@@ -87,15 +92,6 @@ export default function Expense({ getCategories, fetchData, editData }) {
         onFinish={onFinish}
         className="space-y-4"
       >
-        {/* Expense Name */}
-        <Form.Item
-          label="Expense Name"
-          name="name"
-          rules={[{ required: true, message: "Please input the expense name!" }]}
-        >
-          <Input placeholder="Enter expense name" />
-        </Form.Item>
-
         {/* Expense Amount */}
         <Form.Item
           label="Amount"
@@ -103,6 +99,17 @@ export default function Expense({ getCategories, fetchData, editData }) {
           rules={[{ required: true, message: "Please input the amount!" }]}
         >
           <Input type="number" placeholder="Enter amount" prefix="₹" />
+        </Form.Item>
+
+        {/* Expense Name */}
+        <Form.Item
+          label="Expense Name"
+          name="name"
+          rules={[
+            { required: true, message: "Please input the expense name!" },
+          ]}
+        >
+          <Input placeholder="Enter expense name" />
         </Form.Item>
 
         {/* Budget Category Dropdown */}
@@ -125,10 +132,15 @@ export default function Expense({ getCategories, fetchData, editData }) {
           <Button
             type="primary"
             htmlType="submit"
-            className="w-full bg-gradient-to-r from-blue-500 to-purple-600"
+            className="bg-gradient-to-r from-blue-500 to-purple-600"
             loading={loading} // Shows a loader on the button when submitting
           >
-            {loading ? "Submitting..." : editData ? "Edit Expense" : "Add Expense"} {/* Dynamic Button Text */}
+            {loading
+              ? "Submitting..."
+              : editData
+              ? "Edit Expense"
+              : "Add Expense"}{" "}
+            {/* Dynamic Button Text */}
           </Button>
         </Form.Item>
       </Form>

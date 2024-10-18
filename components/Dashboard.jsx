@@ -143,7 +143,7 @@ export default function Dashboard() {
     return (
       <div className="flex flex-col scale-150 h-screen w-full fixed items-center justify-center gap-3">
         <Spin size="large"></Spin>
-        <p>Loading your data!</p>
+        <p className="text-slate-200">Loading your data!</p>
       </div>
     );
   }
@@ -156,8 +156,8 @@ export default function Dashboard() {
   return (
     <div className="p-4">
       <div className="flex gap-1 items-center">
-        <h1 className="gradient-text-blue text-lg md:text-2xl font-semibold flex items-center">
-          <span className="text-white p-2 rounded-full hidden md:block">
+        <h1 className="gradient-text-white text-lg md:text-2xl font-semibold flex items-center">
+          <span className="p-2 rounded-full hidden md:inline">
             {dayjs().format("MMMM YYYY")},
           </span>
           Hello 👋 {session?.user?.name}, track all your expenses, budget and

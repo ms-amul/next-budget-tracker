@@ -84,8 +84,8 @@ export default function IncomeForm({ fetchData, editData }) {
   };
 
   return (
-    <div className="container mx-auto max-w-md p-6 shadow-lg bg-light-bg rounded-lg">
-      <h1 className="gradient-text-blue text-xl font-semibold mb-6">
+    <div className="">
+      <h1 className="gradient-text-blue text-xl font-bold mb-6">
         {editData ? "Edit Your Income" : "Add Your Income"} {/* Dynamic Title */}
       </h1>
 
@@ -95,6 +95,16 @@ export default function IncomeForm({ fetchData, editData }) {
         onFinish={onFinish}
         className="space-y-4"
       >
+
+        {/* Income Amount */}
+        <Form.Item
+          label="Amount"
+          name="amount"
+          rules={[{ required: true, message: "Please input the amount!" }]}
+        >
+          <Input type="number" placeholder="Enter amount" prefix="₹" />
+        </Form.Item>
+        
         {/* Income Source */}
         <Form.Item
           label="Income Source"
@@ -106,14 +116,7 @@ export default function IncomeForm({ fetchData, editData }) {
           <Input placeholder="Enter income source (e.g., Salary)" />
         </Form.Item>
 
-        {/* Income Amount */}
-        <Form.Item
-          label="Amount"
-          name="amount"
-          rules={[{ required: true, message: "Please input the amount!" }]}
-        >
-          <Input type="number" placeholder="Enter amount" prefix="₹" />
-        </Form.Item>
+        
 
         {/* Emoji Picker for Income Icon */}
         <Form.Item label="Icon" name="icon">
@@ -128,12 +131,12 @@ export default function IncomeForm({ fetchData, editData }) {
               {showPicker ? "Hide Emoji Picker" : "Show Emoji Picker"}
             </Button>
           </div>
-          {showPicker && (
-            <div className="mt-2">
-              <EmojiPicker onEmojiClick={onEmojiClick} />
-            </div>
-          )}
         </Form.Item>
+        {showPicker && (
+          <div className="mt-2">
+            <EmojiPicker className="w-full mx-auto" onEmojiClick={onEmojiClick} theme="dark" />
+          </div>
+        )}
 
         {/* Submit Button */}
         <Form.Item>

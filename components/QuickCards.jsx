@@ -47,7 +47,7 @@ const NeumorphicCard = ({ title, amount, icon, onEyeClick }) => {
             >
               {title}
             </h2>
-            <p className="text-3xl md:text-4xl font-bold gradient-text-blue m-0">
+            <p className="text-2xl md:text-3xl font-bold gradient-text-blue m-0">
               ₹{count} {/* Display the animated count */}
             </p>
           </div>

@@ -68,7 +68,11 @@ export default function BudgetForm({ fetchData, editData }) {
       });
 
       if (res.ok) {
-        message.success(editData ? "Budget updated successfully!" : "Budget created successfully!"); // Success notification
+        message.success(
+          editData
+            ? "Budget updated successfully!"
+            : "Budget created successfully!"
+        ); // Success notification
         form.resetFields(); // Clear form after successful submission
         setSelectedEmoji(""); // Clear emoji selection
         fetchData(); // Fetch updated budget data after successful submission
@@ -84,9 +88,10 @@ export default function BudgetForm({ fetchData, editData }) {
   };
 
   return (
-    <div className="container mx-auto max-w-md p-6 shadow-lg bg-light-bg rounded-lg">
-      <h1 className="gradient-text-blue text-xl font-semibold mb-6">
-        {editData ? "Edit Your Budget" : "Create a New Budget"} {/* Dynamic Title */}
+    <div className="">
+      <h1 className="gradient-text-blue text-xl font-bold mb-6">
+        {editData ? "Edit Your Budget" : "Create a New Budget"}{" "}
+        {/* Dynamic Title */}
       </h1>
 
       <Form
@@ -95,15 +100,6 @@ export default function BudgetForm({ fetchData, editData }) {
         onFinish={onFinish}
         className="space-y-4"
       >
-        {/* Budget Name */}
-        <Form.Item
-          label="Budget Name"
-          name="name"
-          rules={[{ required: true, message: "Please input the budget name!" }]}
-        >
-          <Input placeholder="Enter budget name" />
-        </Form.Item>
-
         {/* Budget Amount */}
         <Form.Item
           label="Amount"
@@ -111,6 +107,14 @@ export default function BudgetForm({ fetchData, editData }) {
           rules={[{ required: true, message: "Please input the amount!" }]}
         >
           <Input type="number" placeholder="Enter amount" prefix="₹" />
+        </Form.Item>
+        {/* Budget Name */}
+        <Form.Item
+          label="Budget Name"
+          name="name"
+          rules={[{ required: true, message: "Please input the budget name!" }]}
+        >
+          <Input placeholder="Enter budget name" />
         </Form.Item>
 
         {/* Emoji Picker for Budget Icon */}
@@ -126,12 +130,16 @@ export default function BudgetForm({ fetchData, editData }) {
               {showPicker ? "Hide Emoji Picker" : "Show Emoji Picker"}
             </Button>
           </div>
-          {showPicker && (
-            <div className="mt-2">
-              <EmojiPicker onEmojiClick={onEmojiClick} />
-            </div>
-          )}
         </Form.Item>
+        {showPicker && (
+          <div className="mt-2">
+            <EmojiPicker
+              className="w-full mx-auto"
+              onEmojiClick={onEmojiClick}
+              theme="dark"
+            />
+          </div>
+        )}
 
         {/* Submit Button */}
         <Form.Item>
@@ -141,7 +149,12 @@ export default function BudgetForm({ fetchData, editData }) {
             className="w-full bg-gradient-to-r from-blue-500 to-purple-600"
             loading={loading} // Shows a loader on the button when submitting
           >
-            {loading ? "Submitting..." : editData ? "Edit Budget" : "Create Budget"} {/* Dynamic Button Text */}
+            {loading
+              ? "Submitting..."
+              : editData
+              ? "Edit Budget"
+              : "Create Budget"}{" "}
+            {/* Dynamic Button Text */}
           </Button>
         </Form.Item>
       </Form>

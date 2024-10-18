@@ -13,7 +13,6 @@ const handler = NextAuth({
   callbacks: {
     async session({ session, token }) {
       await connectMongo();
-      console.log(session);
       const user = await User.findOne({ email: session.user.email });
       session.user.id = user ? user._id.toString() : null;
       return session;

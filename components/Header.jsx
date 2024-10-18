@@ -9,7 +9,7 @@ export default function Header() {
   return (
     <div className="md:px-16 rounded-3xl header">
       <div className="flex justify-between items-center p-2">
-        <div className="flex items-center text-xl font-bold gradient-text-blue select-none pointer-events-none">
+        <div className="flex items-center text-xl font-bold gradient-text-white select-none pointer-events-none">
           <img src="/logo.png" className="w-14 h-14" />
           Servify<span className="hidden md:block"> - Finance manager</span>
         </div>

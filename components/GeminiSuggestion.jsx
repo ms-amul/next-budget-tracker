@@ -25,6 +25,10 @@ const BudgetSuggestionComponent = ({ income, expenses, budget }) => {
   const [responseText, setResponseText] = useState("");
   const [promptResponses, setPromptResponses] = useState([]);
 
+  if(income.length===0 || expenses.length===0 || budget.length===0){
+    return <></>;
+  }
+
   const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
 
   const showModal = () => {

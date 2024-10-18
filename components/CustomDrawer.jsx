@@ -63,10 +63,13 @@ const CustomDrawer = ({
     >
       <div className="flex justify-between items-center mb-4">
         {isCurrentMonth ? (
-          <Button type="primary" onClick={() => {
-            handleCloseDrawer();
-            handleOpenModal(drawerType);
-          }}>
+          <Button
+            type="primary"
+            onClick={() => {
+              handleCloseDrawer();
+              handleOpenModal(drawerType);
+            }}
+          >
             Add {drawerType === "budget" ? "Budget" : "Income"}
           </Button>
         ) : (
@@ -82,8 +85,10 @@ const CustomDrawer = ({
           onChange={handleMonthChange}
           placeholder="Select Month"
           allowClear={false}
+          inputReadOnly={true}
           disabledDate={(current) =>
-            current && current > dayjs().endOf("month")
+            current &&
+            (current > dayjs().endOf("month") || current < dayjs("2024-09-01"))
           }
         />
       </div>

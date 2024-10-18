@@ -126,7 +126,7 @@ export default function Dashboard({
       <Table
         dataSource={filteredExpenses}
         columns={[
-          { title: "Name", dataIndex: "name", key: "name", fixed: 'left' },
+          { title: "Name", dataIndex: "name", key: "name", fixed: "left" },
           {
             title: (
               <div>
@@ -182,8 +182,9 @@ export default function Dashboard({
                   value={selectedMonth}
                   placeholder="Select Month"
                   allowClear={false}
+                  inputReadOnly={true}
                   disabledDate={(current) =>
-                    current && current > dayjs().endOf("month")
+                    current && (current > dayjs().endOf("month") || current < dayjs("2024-09-01"))
                   }
                 />
               </div>

@@ -146,7 +146,10 @@ export default function MonthlyExpenseGraph({ expenses, budgets }) {
         <BiSolidCommentError className="text-slate-100" />
         <h3 className="gradient-text-green font-semibold">
           Remaining Budget: ₹{" "}
-          {totalBudget - (dailyExpenses.length > 0 ? dailyExpenses[dailyExpenses.length - 1].total : 0)}
+          {totalBudget -
+            (dailyExpenses.length > 0
+              ? dailyExpenses[dailyExpenses.length - 1].total
+              : 0)}
         </h3>
 
         <MonthPicker
@@ -154,12 +157,18 @@ export default function MonthlyExpenseGraph({ expenses, budgets }) {
           value={selectedMonth}
           placeholder="Select Month"
           allowClear={false}
+          inputReadOnly={true}
+          disabledDate={(current) =>
+            current && (current > dayjs().endOf("month") || current < dayjs("2024-09-01"))
+          }
         />
       </div>
 
       {/* Added class for scrolling */}
       <div style={{ width: "100%", overflowX: "auto" }}>
-        <div style={{ minWidth: "800px", height: "500px" }}> {/* Adjust minWidth as needed */}
+        <div style={{ minWidth: "800px", height: "500px" }}>
+          {" "}
+          {/* Adjust minWidth as needed */}
           <Line data={chartData} options={chartOptions} />
         </div>
       </div>
