@@ -1,59 +1,49 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { Button, Modal } from "antd";
+import { Button, Modal, DatePicker } from "antd";
 import "antd/dist/reset.css";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import ReactMarkdown from "react-markdown";
+import dayjs from "dayjs";
 
-const filterCurrentMonthData = (items) => {
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth(); // 0-11
-  const currentYear = currentDate.getFullYear(); // YYYY
+const { MonthPicker } = DatePicker;
 
-  return items.filter((item) => {
-    const itemDate = new Date(item.createdAt);
-    return (
-      itemDate.getMonth() === currentMonth &&
-      itemDate.getFullYear() === currentYear
-    );
-  });
-};
-
-const BudgetSuggestionComponent = ({ income, expenses, budget }) => {
+const BudgetSuggestionComponent = ({
+  income,
+  expenses,
+  budget,
+  selectedMonth,
+  setSelectedMonth,
+}) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [responseText, setResponseText] = useState("");
   const [promptResponses, setPromptResponses] = useState([]);
 
-  if(income.length===0 || expenses.length===0 || budget.length===0){
-    return <></>;
-  }
-
   const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
 
   const showModal = () => {
     setIsModalVisible(true);
-    getBudgetSuggestions(); // Fetch suggestions
+    getBudgetSuggestions();
   };
 
   const handleClose = () => {
     setIsModalVisible(false);
-    setResponseText(""); // Clear response
+    setResponseText("");
+  };
+
+  const handleMonthChange = (date) => {
+    setSelectedMonth(date);
   };
 
   const getBudgetSuggestions = async () => {
     setLoading(true);
 
-    // Filter data for current month
-    const filteredIncome = filterCurrentMonthData(income);
-    const filteredExpenses = filterCurrentMonthData(expenses);
-    const filteredBudget = filterCurrentMonthData(budget);
-
     const prompt = `I have an income of ₹${JSON.stringify(
-      filteredIncome
+      income
     )}, expenses of ₹${JSON.stringify(
-      filteredExpenses
-    )}, and a budget of ₹${JSON.stringify(filteredBudget)}. 
+      expenses
+    )}, and a budget of ₹${JSON.stringify(budget)}. 
 
     Please provide detailed suggestions on how to manage my finances. 
 
@@ -87,16 +77,28 @@ const BudgetSuggestionComponent = ({ income, expenses, budget }) => {
 
   return (
     <div className="text-right">
-      <Button
-        color="primary"
-        variant="outlined"
-        onClick={showModal}
-        icon={<FcGoogle />}
-        className="mb-3 text-cyan-300"
-      >
-        Get AI Suggestion
-      </Button>
-
+      <div className="flex justify-end gap-2">
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={showModal}
+          icon={<FcGoogle />}
+          className="text-cyan-100"
+        >
+          Insights
+        </Button>
+        <MonthPicker
+          onChange={handleMonthChange}
+          value={selectedMonth}
+          placeholder="Select Month"
+          allowClear={false}
+          inputReadOnly={true}
+          disabledDate={(current) =>
+            current &&
+            (current > dayjs().endOf("month") || current < dayjs("2024-09-01"))
+          }
+        />
+      </div>
       <Modal
         title={
           <div className="flex items-center gap-2 border border-transparent shadow-xl rounded-full border-b-blue-400 p-2">

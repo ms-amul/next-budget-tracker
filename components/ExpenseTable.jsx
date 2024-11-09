@@ -23,11 +23,12 @@ export default function Dashboard({
   getCategories,
   addExpense,
   fetchData,
+  selectedMonth,
+  setSelectedMonth
 }) {
   const currentMonth = dayjs().startOf("month");
 
   const [filteredExpenses, setFilteredExpenses] = useState(expenses);
-  const [selectedMonth, setSelectedMonth] = useState(dayjs()); // Default to current month
   const [selectedCategory, setSelectedCategory] = useState(null);
   const isCurrentMonth = selectedMonth.isSame(currentMonth, "month");
 
@@ -45,31 +46,9 @@ export default function Dashboard({
     }
   };
 
-  // Helper function to filter and sort expenses by selected month
-  const filterByMonth = (month) => {
-    if (!month) {
-      setFilteredExpenses(expenses);
-      return;
-    }
-
-    const filtered = expenses.filter(
-      (expense) =>
-        dayjs(expense.createdAt).format("MMMM YYYY") ===
-        month.format("MMMM YYYY")
-    );
-
-    // Sort the filtered expenses by createdAt in descending order
-    const sorted = filtered.sort((a, b) => {
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    });
-
-    setFilteredExpenses(sorted);
-  };
-
   // Handle month filter change
   const handleMonthChange = (date) => {
     setSelectedMonth(date);
-    filterByMonth(date);
   };
 
   // Budget category filter logic
@@ -95,18 +74,14 @@ export default function Dashboard({
   // Reset filters and show all expenses
   const clearFilters = () => {
     setSelectedMonth(dayjs());
-    filterByMonth(dayjs());
     setSelectedCategory(null);
   };
 
   useEffect(() => {
-    // Sort initial expenses by createdAt in descending order
     const sortedExpenses = expenses.sort((a, b) => {
       return new Date(b.createdAt) - new Date(a.createdAt);
     });
     setFilteredExpenses(sortedExpenses);
-    setSelectedMonth(dayjs());
-    filterByMonth(dayjs());
     setSelectedCategory(null);
   }, [expenses]);
 

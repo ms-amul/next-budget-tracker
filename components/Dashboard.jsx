@@ -1,25 +1,20 @@
 "use client";
-import NeumorphicCard from "@/components/QuickCards";
+import CustomDrawer from "@/components/CustomDrawer";
+import CustomModal from "@/components/CustomModal";
 import ExpenseTable from "@/components/ExpenseTable";
+import GeminiModal from "@/components/GeminiSuggestion";
 import Graph from "@/components/Graph";
+import NeumorphicCard from "@/components/QuickCards";
+import { message, Spin } from "antd";
+import dayjs from "dayjs";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { GiExpense, GiWallet } from "react-icons/gi";
-import { Spin, Button } from "antd";
-import { useSession } from "next-auth/react";
-import Link from "next/link";
-import CustomDrawer from "@/components/CustomDrawer";
-import CustomModal from "@/components/CustomModal";
-import dayjs from "dayjs";
-import GeminiModal from "@/components/GeminiSuggestion";
-import { useRouter } from "next/navigation";
-
 
 export default function Dashboard() {
-
   const router = useRouter();
-
-
   const { data: session, status } = useSession();
   const [monthlyTotals, setMonthlyTotals] = useState({
     totalBudget: 0,
@@ -30,11 +25,13 @@ export default function Dashboard() {
   const [budgets, setBudgets] = useState([]);
   const [incomes, setIncomes] = useState([]);
   const [expenses, setExpenses] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState(dayjs());
 
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const [drawerType, setDrawerType] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleOpenDrawer = (type) => {
     setDrawerType(type);
@@ -57,12 +54,15 @@ export default function Dashboard() {
     setIsModalVisible(false);
   };
 
-  const fetchData = async () => {
+  const fetchData = async (month = selectedMonth) => {
+    setLoading(true);
     try {
+      const formattedMonth = month.format("YYYY-MM");
+
       const [budgetRes, incomeRes, expenseRes] = await Promise.allSettled([
-        fetch(`/api/budget`),
-        fetch(`/api/income`),
-        fetch(`/api/expense`),
+        fetch(`/api/budget?month=${formattedMonth}`),
+        fetch(`/api/income?month=${formattedMonth}`),
+        fetch(`/api/expense?month=${formattedMonth}`),
       ]);
 
       const budgetsData =
@@ -73,73 +73,55 @@ export default function Dashboard() {
         expenseRes.status === "fulfilled" ? await expenseRes.value.json() : [];
 
       if (budgetRes.status === "rejected") {
-        console.error("Failed to fetch budgets:", budgetRes.reason);
+        message.error("Failed to fetch budgets.");
       }
       if (incomeRes.status === "rejected") {
-        console.error("Failed to fetch incomes:", incomeRes.reason);
+        message.error("Failed to fetch incomes.");
       }
       if (expenseRes.status === "rejected") {
-        console.error("Failed to fetch expenses:", expenseRes.reason);
+        message.error("Failed to fetch expenses.");
       }
 
       setBudgets(budgetsData);
       setIncomes(incomesData);
       setExpenses(expensesData);
 
-      const currentMonth = new Date().getMonth();
-      const currentYear = new Date().getFullYear();
-
-      const isCurrentMonth = (dateString) => {
-        const date = new Date(dateString);
-        return (
-          date.getMonth() === currentMonth && date.getFullYear() === currentYear
-        );
-      };
-
       const totalBudget = budgetsData.reduce(
-        (acc, budget) =>
-          isCurrentMonth(budget.createdAt) ? acc + budget.amount : acc,
+        (acc, budget) => acc + budget.amount,
         0
       );
       const totalIncome = incomesData.reduce(
-        (acc, income) =>
-          isCurrentMonth(income.createdAt) ? acc + income.amount : acc,
+        (acc, income) => acc + income.amount,
         0
       );
       const totalExpenses = expensesData.reduce(
-        (acc, expense) =>
-          isCurrentMonth(expense.createdAt) ? acc + expense.amount : acc,
+        (acc, expense) => acc + expense.amount,
         0
       );
-
       setMonthlyTotals({ totalBudget, totalIncome, totalExpenses });
     } catch (error) {
       console.error("Error fetching data:", error);
+      message.error("Failed to fetch data.");
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const getBudgetCategoriesForDropdown = (selectedMonth) => {
-    const formattedMonth = selectedMonth.format("MMMM YYYY");
-    if (budgets.length > 0) {
-      return budgets
-        .filter((budget) => {
-          const budgetMonthYear = dayjs(budget.createdAt).format("MMMM YYYY");
-          return budgetMonthYear === formattedMonth;
-        })
-        .map((budget) => ({
-          name: budget.name,
-          _id: budget._id,
-          icon: budget.icon,
-        }));
-    }
-    return [];
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(selectedMonth);
+  }, [selectedMonth]);
 
-  if (status === "loading") {
+  const getBudgetCategoriesForDropdown = () => {
+    return budgets.length > 0
+      ? budgets.map((budget) => ({
+          name: budget.name,
+          _id: budget._id,
+          icon: budget.icon,
+        }))
+      : [];
+  };
+
+  if (status === "loading" || loading) {
     return (
       <div className="flex flex-col scale-150 h-screen w-full fixed items-center justify-center gap-3">
         <Spin size="large"></Spin>
@@ -158,13 +140,20 @@ export default function Dashboard() {
       <div className="flex gap-1 items-center">
         <h1 className="gradient-text-white text-lg md:text-2xl font-semibold flex items-center">
           <span className="p-2 rounded-full hidden md:inline">
-            {dayjs().format("MMMM YYYY")},
+            {selectedMonth.format("MMMM YYYY")},
           </span>
           Hello 👋 {session?.user?.name}, track all your expenses, budget and
           incomes...
         </h1>
       </div>
-      <GeminiModal income={incomes} budget={budgets} expenses={expenses} />
+
+      <GeminiModal
+        income={incomes}
+        budget={budgets}
+        expenses={expenses}
+        selectedMonth={selectedMonth}
+        setSelectedMonth={setSelectedMonth}
+      />
 
       <div className="flex flex-wrap justify-center quickcards">
         {/* Budget Card */}
@@ -191,12 +180,19 @@ export default function Dashboard() {
           onEyeClick={() => handleOpenModal("expense")}
         />
       </div>
-      <Graph expenses={expenses} budgets={budgets} />
+      <Graph
+        expenses={expenses}
+        budgets={budgets}
+        selectedMonth={selectedMonth}
+        setSelectedMonth={setSelectedMonth}
+      />
       <ExpenseTable
         expenses={expenses}
         getCategories={getBudgetCategoriesForDropdown}
         addExpense={(data) => handleOpenModal("expense", data)}
         fetchData={fetchData}
+        selectedMonth={selectedMonth}
+        setSelectedMonth={setSelectedMonth}
       />
 
       <CustomDrawer
@@ -211,6 +207,8 @@ export default function Dashboard() {
         modalType={modalType}
         handleCloseModal={handleCloseModal}
         getBudgetCategoriesForDropdown={getBudgetCategoriesForDropdown}
+        selectedMonth={selectedMonth}
+        setSelectedMonth={setSelectedMonth}
       />
 
       <CustomModal
@@ -221,6 +219,8 @@ export default function Dashboard() {
         incomes={incomes}
         getBudgetCategoriesForDropdown={getBudgetCategoriesForDropdown}
         fetchData={fetchData}
+        selectedMonth={selectedMonth}
+        setSelectedMonth={setSelectedMonth}
       />
     </div>
   );

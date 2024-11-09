@@ -13,9 +13,9 @@ const CustomDrawer = ({
   budgets,
   incomes,
   fetchData,
+  selectedMonth,
+  setSelectedMonth
 }) => {
-  // State to handle selected month (default is current month)
-  const [selectedMonth, setSelectedMonth] = useState(dayjs());
 
   // Get the current month
   const currentMonth = dayjs().startOf("month");

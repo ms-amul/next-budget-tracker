@@ -38,29 +38,46 @@ export async function POST(req) {
   }
 }
 
-// GET method to fetch all incomes of the session user
+// GET method to fetch all incomes of the session user for a specific month
 export async function GET(req) {
-  await connectMongo();
-  const session = await getServerSession(req);
-
-  if (!session) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-  }
-
   try {
+    await connectMongo();
+    const session = await getServerSession(req);
+
+    if (!session) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
+
     const user = await User.findOne({ email: session.user.email });
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const incomes = await Income.find({ createdBy: user._id });
+    // Extract month parameter from the query string
+    const { searchParams } = new URL(req.url);
+    const month = searchParams.get("month"); // Expected format: YYYY-MM
+
+    let query = { createdBy: user._id };
+
+    // If month is provided, add it to the query
+    if (month) {
+      const startOfMonth = new Date(`${month}-01`);
+      const endOfMonth = new Date(startOfMonth);
+      endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+
+      query = {
+        ...query,
+        createdAt: { $gte: startOfMonth, $lt: endOfMonth },
+      };
+    }
+
+    // Fetch incomes based on the constructed query
+    const incomes = await Income.find(query);
+
     return NextResponse.json(incomes, { status: 200 });
   } catch (error) {
     console.error("Error fetching incomes:", error.message);
-    return NextResponse.json(
-      { error: "Error fetching incomes" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 

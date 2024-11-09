@@ -35,7 +35,7 @@ export async function POST(req) {
   }
 }
 
-// GET method to fetch all expenses of the session user
+// GET method to fetch all expenses of the session user for a specific month
 export async function GET(req) {
   try {
     await connectMongo();
@@ -50,15 +50,34 @@ export async function GET(req) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const expenses = await Expense.find({ createdBy: user._id }).populate(
-      "budgetId"
-    );
+    // Extract month parameter from the query string
+    const { searchParams } = new URL(req.url);
+    const month = searchParams.get("month"); // Expected format: YYYY-MM
+
+    let query = { createdBy: user._id };
+
+    // If month is provided, add it to the query
+    if (month) {
+      const startOfMonth = new Date(`${month}-01`);
+      const endOfMonth = new Date(startOfMonth);
+      endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+
+      query = {
+        ...query,
+        createdAt: { $gte: startOfMonth, $lt: endOfMonth },
+      };
+    }
+
+    // Fetch expenses based on the constructed query and populate budget info
+    const expenses = await Expense.find(query).populate("budgetId");
+
     return NextResponse.json(expenses, { status: 200 });
   } catch (error) {
     console.error("Error in GET:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
 
 // PUT method to update an existing expense
 export async function PUT(req) {
