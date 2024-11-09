@@ -32,16 +32,14 @@ const NeumorphicCard = ({ title, amount, icon, onEyeClick }) => {
   return (
     <Card
       onClick={onEyeClick}
-      className="bg-light-bg shadow-neumorphic rounded-lg p-1 m-2 flex-1 cursor-pointer"
+      className="qccard shadow-neumorphic rounded-lg p-1 m-2 flex-1 cursor-pointer"
     >
       <div className="flex justify-between items-center">
         <div className="flex justify-start items-center">
           <div className={`text-5xl md:text-7xl mr-4 p-2 rounded-xl ${title}`}>
             {icon}
           </div>
-          {/* Icon */}
           <div className="flex flex-col items-start justify-center">
-            {/* Title and Amount */}
             <h2
               className={`text-2xl md:text-3xl font-bold gradient-text-${title} m-0 mb-2`}
             >

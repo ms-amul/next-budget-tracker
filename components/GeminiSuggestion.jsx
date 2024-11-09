@@ -37,29 +37,27 @@ const BudgetSuggestionComponent = ({
   };
 
   const getBudgetSuggestions = async () => {
+    if (!income.length || !expenses.length || !budget.length) {
+      setResponseText("Please add at least one item in each section: income, expenses, and budget.");
+      return;
+    }
+  
     setLoading(true);
-
-    const prompt = `I have an income of ₹${JSON.stringify(
-      income
-    )}, expenses of ₹${JSON.stringify(
-      expenses
-    )}, and a budget of ₹${JSON.stringify(budget)}. 
-
-    Please provide detailed suggestions on how to manage my finances. 
-
-    **Format the response as follows:**
-
-    1. **Key Recommendations**
-       - Use bullet points to outline specific recommendations for managing my finances effectively, including strategies to reduce expenses, increase savings, and improve overall financial health.
-
-    2. **Areas for Improvement**
-       - Identify key areas where I can improve my financial management, including habits, budgeting techniques, or financial tools that could be beneficial.
-
-    3. **Overall Summary**
-       - Summarize the current financial health based on the provided data, emphasizing any strengths and weaknesses. Include insights on how to create a balanced financial plan moving forward.
-
-    Give calculations, savings and investment ideas etc. Please ensure the response is formatted correctly in Markdown for better readability.`;
-
+  
+    const prompt = `I have the following data:
+    - Income: ₹${JSON.stringify(income)}
+    - Expenses: ₹${JSON.stringify(expenses)}
+    - Budget: ₹${JSON.stringify(budget)}
+  
+    Please provide a brief, compact report covering:
+  
+    1. **Expense Report**: A quick summary of the major expenses and suggestions to optimize them.
+    2. **Income Report**: Insights into my income sources and ways to increase them.
+    3. **Budget Report**: A brief overview of my budget allocation and whether it’s balanced.
+    4. **Savings Report**: How much I can potentially save and any tips on increasing savings.
+  
+    Keep the response concise and consistent.`;
+  
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
       const result = await model.generateContent(prompt);
@@ -74,10 +72,11 @@ const BudgetSuggestionComponent = ({
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="text-right">
-      <div className="flex justify-end gap-2">
+      <div className="flex justify-end gap-2 mb-3">
         <Button
           color="primary"
           variant="outlined"

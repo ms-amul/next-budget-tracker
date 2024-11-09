@@ -22,7 +22,7 @@ const IncomeCard = ({ income, editData, fetchData }) => {
   };
 
   return (
-    <div className="p-4 bg-slate-900 rounded-lg shadow-md my-4 hover:shadow-lg transition-shadow duration-300">
+    <div className="p-4 qcard rounded-lg shadow-md my-4 hover:shadow-lg transition-shadow duration-300">
       <div className="flex items-center mb-4">
         <div className="w-8 h-8 mr-3 flex items-center justify-center bg-slate-950 rounded-full">
           {income.icon ? (

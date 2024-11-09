@@ -31,11 +31,12 @@ ChartJS.register(
 export default function MonthlyExpenseGraph({ expenses, budgets, selectedMonth }) {
   const [dailyExpenses, setDailyExpenses] = useState([]);
   const [totalBudget, setTotalBudget] = useState(0);
-  const [isBlinking, setIsBlinking] = useState(false); // State to handle blinking effect
+  const [isBlinking, setIsBlinking] = useState(false);
 
   const calculateDailyExpenses = (selectedMonth) => {
     const today = dayjs();
     const startOfMonth = selectedMonth.startOf("month");
+    const endOfMonth = selectedMonth.endOf("month");
 
     const dailyExpenseMap = {};
     let monthlyTotalBudget = 0;
@@ -62,7 +63,10 @@ export default function MonthlyExpenseGraph({ expenses, budgets, selectedMonth }
     const dailyData = [];
     let runningTotal = 0;
 
-    for (let i = 1; i <= today.date(); i++) {
+    // Determine the last day to display
+    const lastDayToPlot = selectedMonth.isSame(today, "month") ? today.date() : selectedMonth.daysInMonth();
+
+    for (let i = 1; i <= lastDayToPlot; i++) {
       runningTotal += dailyExpenseMap[i] || 0;
       dailyData.push({
         day: i,
@@ -77,17 +81,16 @@ export default function MonthlyExpenseGraph({ expenses, budgets, selectedMonth }
     calculateDailyExpenses(selectedMonth);
   }, [expenses, selectedMonth, budgets]);
 
-  // Effect to toggle blinking on the last point
   useEffect(() => {
     const interval = setInterval(() => {
-      setIsBlinking((prev) => !prev); // Toggle blinking state
-    }, 500); // Change color every 500ms for blinking effect
+      setIsBlinking((prev) => !prev);
+    }, 500);
 
-    return () => clearInterval(interval); // Cleanup interval on component unmount
+    return () => clearInterval(interval);
   }, []);
 
   const chartData = {
-    labels: Array.from({ length: selectedMonth.daysInMonth() }, (_, index) => index + 1), // All days in the month
+    labels: Array.from({ length: selectedMonth.daysInMonth() }, (_, index) => index + 1),
     datasets: [
       {
         label: "Total Expense (₹)",
@@ -99,8 +102,8 @@ export default function MonthlyExpenseGraph({ expenses, budgets, selectedMonth }
         pointBackgroundColor: dailyExpenses.map((_, index) =>
           index === dailyExpenses.length - 1
             ? isBlinking
-              ? "rgba(255, 132, 0, 0.7)" // Blinking color
-              : "rgba(75, 192, 192, 1)" // Normal color
+              ? "rgba(255, 132, 0, 0.7)"
+              : "rgba(75, 192, 192, 1)"
             : "rgba(75, 192, 192, 0)"
         ),
         pointRadius: dailyExpenses.map((_, index) =>
@@ -116,7 +119,7 @@ export default function MonthlyExpenseGraph({ expenses, budgets, selectedMonth }
         borderColor: "rgba(255, 119, 0, 0.6)",
         borderDash: [10, 5],
         fill: false,
-        pointRadius: 0, // No points for the budget line
+        pointRadius: 0,
       },
     ],
   };
@@ -134,14 +137,14 @@ export default function MonthlyExpenseGraph({ expenses, budgets, selectedMonth }
       },
       tooltip: {
         enabled: true,
-        position: 'nearest', // Position the tooltip near the point
+        position: 'nearest',
         callbacks: {
           title: (tooltipItems) => {
             const lastPoint = dailyExpenses[dailyExpenses.length - 1];
-            return `${selectedMonth.format("MMMM")} ${lastPoint.day}, ₹${lastPoint.total}`; // Display date and total expense till that day
+            return `${selectedMonth.format("MMMM")} ${lastPoint.day}, ₹${lastPoint.total}`;
           },
           label: (tooltipItem) => {
-            return ''; // Empty label to avoid showing the default tooltip text
+            return '';
           },
         },
       },
@@ -153,7 +156,7 @@ export default function MonthlyExpenseGraph({ expenses, budgets, selectedMonth }
           text: "Days",
         },
         ticks: {
-          autoSkip: false, // Prevent skipping of any days on x-axis
+          autoSkip: false,
         },
       },
       y: {
@@ -172,10 +175,7 @@ export default function MonthlyExpenseGraph({ expenses, budgets, selectedMonth }
         <BiSolidCommentError className="text-slate-100" />
         <h3 className="gradient-text-green font-semibold">
           Remaining Budget: ₹{" "}
-          {totalBudget -
-            (dailyExpenses.length > 0
-              ? dailyExpenses[dailyExpenses.length - 1].total
-              : 0)}
+          {totalBudget - (dailyExpenses.length > 0 ? dailyExpenses[dailyExpenses.length - 1].total : 0)}
         </h3>
       </div>
 
