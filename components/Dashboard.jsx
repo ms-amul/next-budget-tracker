@@ -139,14 +139,11 @@ export default function Dashboard() {
     <div className="p-4">
       <div className="flex gap-1 items-center">
         <h1 className="gradient-text-white text-lg md:text-2xl font-semibold flex items-center">
-          <span className="p-2 rounded-full hidden md:inline">
-            {selectedMonth.format("MMMM YYYY")},
-          </span>
-          Hello 👋 {session?.user?.name}, track all your expenses, budget and
-          incomes...
+          Hello 👋 {session?.user?.name}, manage your finances, budget, and
+          income with AI-powered insights and monthly reports...
         </h1>
       </div>
-      
+
       <GeminiModal
         income={incomes}
         budget={budgets}

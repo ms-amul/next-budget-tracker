@@ -7,11 +7,12 @@ import {
   Table,
   message,
   Popconfirm,
+  Input,
 } from "antd";
 import { useEffect, useState } from "react";
 import { FaWallet } from "react-icons/fa"; // Default icon if category icon is missing
 import { AlertTwoTone } from "@ant-design/icons";
-import dayjs from "dayjs"; // Assuming dayjs is installed for date handling
+import dayjs from "dayjs";
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 
@@ -30,6 +31,7 @@ export default function Dashboard({
 
   const [filteredExpenses, setFilteredExpenses] = useState(expenses);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [searchText, setSearchText] = useState(""); // State to track search input
   const isCurrentMonth = selectedMonth.isSame(currentMonth, "month");
 
   const deleteExpense = async (id) => {
@@ -71,10 +73,22 @@ export default function Dashboard({
     setSelectedCategory(categoryId);
   };
 
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    const text = e.target.value;
+    setSearchText(text);
+
+    const filtered = expenses.filter((expense) =>
+      expense.name.toLowerCase().includes(text.toLowerCase())
+    );
+    setFilteredExpenses(filtered);
+  };
+
   // Reset filters and show all expenses
   const clearFilters = () => {
     setSelectedMonth(dayjs());
     setSelectedCategory(null);
+    setSearchText("");
   };
 
   useEffect(() => {
@@ -101,7 +115,21 @@ export default function Dashboard({
       <Table
         dataSource={filteredExpenses}
         columns={[
-          { title: "Name", dataIndex: "name", key: "name", fixed: "left" },
+          {
+            title: (
+              <div>
+                <Input
+                  placeholder="Search by name"
+                  value={searchText}
+                  onChange={handleSearchChange}
+                  className="w-[120px] md:w-auto"
+                />
+              </div>
+            ),
+            dataIndex: "name",
+            key: "name",
+            fixed: "left",
+          },
           {
             title: (
               <div>
@@ -109,13 +137,13 @@ export default function Dashboard({
                 {filteredExpenses.reduce(
                   (total, expense) => total + (expense.amount || 0),
                   0
-                )}
+                ).toFixed(2)}
                 )
               </div>
             ),
             dataIndex: "amount",
             key: "amount",
-            render: (amount) => `₹ ${amount}`, // Optionally format the amount
+            render: (amount) => `₹ ${amount.toFixed(2)}`,
           },
           {
             title: (
@@ -167,7 +195,6 @@ export default function Dashboard({
             key: "date-actions",
             render: (_, record) => (
               <div className="flex gap-2">
-                {/* Date display */}
                 <span className="text-white bg-cyan-900 text-xs font-normal p-2 rounded-full">
                   {new Date(record.createdAt).toLocaleDateString()}
                 </span>

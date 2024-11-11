@@ -28,7 +28,11 @@ ChartJS.register(
   Filler
 );
 
-export default function MonthlyExpenseGraph({ expenses, budgets, selectedMonth }) {
+export default function MonthlyExpenseGraph({
+  expenses,
+  budgets,
+  selectedMonth,
+}) {
   const [dailyExpenses, setDailyExpenses] = useState([]);
   const [totalBudget, setTotalBudget] = useState(0);
   const [isBlinking, setIsBlinking] = useState(false);
@@ -64,7 +68,9 @@ export default function MonthlyExpenseGraph({ expenses, budgets, selectedMonth }
     let runningTotal = 0;
 
     // Determine the last day to display
-    const lastDayToPlot = selectedMonth.isSame(today, "month") ? today.date() : selectedMonth.daysInMonth();
+    const lastDayToPlot = selectedMonth.isSame(today, "month")
+      ? today.date()
+      : selectedMonth.daysInMonth();
 
     for (let i = 1; i <= lastDayToPlot; i++) {
       runningTotal += dailyExpenseMap[i] || 0;
@@ -90,7 +96,10 @@ export default function MonthlyExpenseGraph({ expenses, budgets, selectedMonth }
   }, []);
 
   const chartData = {
-    labels: Array.from({ length: selectedMonth.daysInMonth() }, (_, index) => index + 1),
+    labels: Array.from(
+      { length: selectedMonth.daysInMonth() },
+      (_, index) => index + 1
+    ),
     datasets: [
       {
         label: "Total Expense (₹)",
@@ -115,7 +124,10 @@ export default function MonthlyExpenseGraph({ expenses, budgets, selectedMonth }
       },
       {
         label: "Budget (₹)",
-        data: Array.from({ length: selectedMonth.daysInMonth() }, () => totalBudget),
+        data: Array.from(
+          { length: selectedMonth.daysInMonth() },
+          () => totalBudget
+        ),
         borderColor: "rgba(255, 119, 0, 0.6)",
         borderDash: [10, 5],
         fill: false,
@@ -137,14 +149,16 @@ export default function MonthlyExpenseGraph({ expenses, budgets, selectedMonth }
       },
       tooltip: {
         enabled: true,
-        position: 'nearest',
+        position: "nearest",
         callbacks: {
           title: (tooltipItems) => {
             const lastPoint = dailyExpenses[dailyExpenses.length - 1];
-            return `${selectedMonth.format("MMMM")} ${lastPoint.day}, ₹${lastPoint.total}`;
+            return `${selectedMonth.format("MMMM")} ${lastPoint.day}, ₹${
+              lastPoint.total
+            }`;
           },
           label: (tooltipItem) => {
-            return '';
+            return "";
           },
         },
       },
@@ -175,7 +189,10 @@ export default function MonthlyExpenseGraph({ expenses, budgets, selectedMonth }
         <BiSolidCommentError className="text-slate-100" />
         <h3 className="gradient-text-green font-semibold">
           Remaining Budget: ₹{" "}
-          {totalBudget - (dailyExpenses.length > 0 ? dailyExpenses[dailyExpenses.length - 1].total : 0)}
+          {totalBudget -
+            (dailyExpenses.length > 0
+              ? dailyExpenses[dailyExpenses.length - 1].total
+              : 0)}
         </h3>
       </div>
 

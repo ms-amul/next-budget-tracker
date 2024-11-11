@@ -16,18 +16,17 @@ const NeumorphicCard = ({ title, amount, icon, onEyeClick }) => {
     const incrementValue = Math.ceil(end / totalSteps);
 
     const timer = setInterval(() => {
-      start += incrementValue; // Increment the count
+      start += incrementValue; 
       if (start >= end) {
-        clearInterval(timer); // Clear the timer if we reach the end
-        setCount(end.toFixed(2)); // Ensure the count ends at the exact amount
+        clearInterval(timer);
+        setCount(end.toFixed(2));
       } else {
-        setCount(start.toFixed(2)); // Update the count
+        setCount(start.toFixed(2));
       }
     }, incrementTime);
 
-    // Cleanup function to clear the timer
     return () => clearInterval(timer);
-  }, [amount]); // Dependency on amount to reset the count when it changes
+  }, [amount]);
 
   return (
     <Card

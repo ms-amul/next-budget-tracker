@@ -79,7 +79,7 @@ const BudgetSuggestionComponent = ({
 
   return (
     <div className="text-right">
-      <div className="flex justify-end gap-2 mb-3">
+      <div className="flex justify-end gap-2 mb-3 items-center">
         <DownloadReportButton
           budgets={budget}
           incomes={income}
@@ -91,7 +91,7 @@ const BudgetSuggestionComponent = ({
           color="primary"
           variant="outlined"
           onClick={showModal}
-          icon={<FcGoogle />}
+          icon={<FcGoogle className="scale-125" />}
           className="text-cyan-100"
         >
           Insights
@@ -102,6 +102,8 @@ const BudgetSuggestionComponent = ({
           placeholder="Select Month"
           allowClear={false}
           inputReadOnly={true}
+          className="text-cyan-100 border-blue-500"
+          format="MMMM YYYY"
           disabledDate={(current) =>
             current &&
             (current > dayjs().endOf("month") || current < dayjs("2024-09-01"))
