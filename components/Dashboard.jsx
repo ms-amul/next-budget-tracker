@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { GiExpense, GiWallet } from "react-icons/gi";
+import DownloadReportButton from "./ReportDownload";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -146,7 +147,12 @@ export default function Dashboard() {
           incomes...
         </h1>
       </div>
-
+      <DownloadReportButton
+        budgets={budgets}
+        incomes={incomes}
+        expenses={expenses}
+        selectedMonth={selectedMonth}
+      />
       <GeminiModal
         income={incomes}
         budget={budgets}

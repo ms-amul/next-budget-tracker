@@ -16,7 +16,9 @@ const CustomModal = ({
   setSelectedMonth, // added to allow switching to current month
 }) => {
   const isCurrentMonth = selectedMonth.isSame(dayjs(), "month");
-
+  const switchToCurrent = () => {
+    setSelectedMonth(dayjs());
+  };
   return (
     <Modal
       open={isModalVisible}
@@ -29,6 +31,7 @@ const CustomModal = ({
           budget={budgets}
           fetchData={fetchData}
           editData={modalType.data}
+          handleCloseModal={handleCloseModal}
         />
       )}
       {modalType.type === "income" && (
@@ -36,27 +39,19 @@ const CustomModal = ({
           income={incomes}
           fetchData={fetchData}
           editData={modalType.data}
+          handleCloseModal={handleCloseModal}
         />
       )}
-      {modalType.type === "expense" ? (
-        isCurrentMonth ? (
-          <Expense
-            getCategories={getBudgetCategoriesForDropdown}
-            fetchData={fetchData}
-            editData={modalType.data}
-          />
-        ) : (
-          <div className="flex flex-col items-center gap-1 text-center p-2 mt-4">
-            <h3 className="gradient-text-blue text-lg">
-              Can't add expenses to previous months. Switch to the current month
-              to add expenses.
-            </h3>
-            <Button type="primary" onClick={() => setSelectedMonth(dayjs())}>
-              Switch to Current Month
-            </Button>
-          </div>
-        )
-      ) : null}
+      {modalType.type === "expense" && (
+        <Expense
+          getCategories={getBudgetCategoriesForDropdown}
+          fetchData={fetchData}
+          editData={modalType.data}
+          isCurrentMonth={isCurrentMonth}
+          switchToCurrent = {switchToCurrent}
+          handleCloseModal={handleCloseModal}
+        />
+      )}
     </Modal>
   );
 };

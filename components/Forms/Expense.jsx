@@ -4,7 +4,14 @@ import { Form, Input, Button, Select, message } from "antd";
 import { useState, useEffect } from "react";
 import dayjs from "dayjs"; // Assuming dayjs is installed
 
-export default function Expense({ getCategories, fetchData, editData }) {
+export default function Expense({
+  getCategories,
+  fetchData,
+  editData,
+  isCurrentMonth,
+  switchToCurrent,
+  handleCloseModal
+}) {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
@@ -18,7 +25,6 @@ export default function Expense({ getCategories, fetchData, editData }) {
     fetchCategories();
   }, [getCategories]);
 
-  // Populate the form with editData if provided
   useEffect(() => {
     if (editData) {
       form.setFieldsValue({
@@ -75,75 +81,87 @@ export default function Expense({ getCategories, fetchData, editData }) {
       message.error("An error occurred. Please try again.");
       console.error("Error submitting expense:", error);
     } finally {
-      setLoading(false); // Stop loading after submission
+      setLoading(false);
+      handleCloseModal();
     }
   };
 
   return (
-    <div className="">
-      <h1 className="gradient-text-blue text-xl font-bold mb-6">
-        {editData ? "Edit Your Expense" : "Add Your Expense"}{" "}
-        {/* Dynamic Title */}
-      </h1>
-
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={onFinish}
-        className="space-y-4"
-      >
-        {/* Expense Amount */}
-        <Form.Item
-          label="Amount"
-          name="amount"
-          rules={[{ required: true, message: "Please input the amount!" }]}
-        >
-          <Input type="number" placeholder="Enter amount" prefix="₹" />
-        </Form.Item>
-
-        {/* Expense Name */}
-        <Form.Item
-          label="Expense Name"
-          name="name"
-          rules={[
-            { required: true, message: "Please input the expense name!" },
-          ]}
-        >
-          <Input placeholder="Enter expense name" />
-        </Form.Item>
-
-        {/* Budget Category Dropdown */}
-        <Form.Item
-          label="Category"
-          name="categoryId"
-          rules={[{ required: true, message: "Please select a category!" }]}
-        >
-          <Select placeholder="Select budget category">
-            {categories.map((category) => (
-              <Select.Option key={category._id} value={category._id}>
-                {category.icon + " " + category.name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-
-        {/* Submit Button */}
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="bg-gradient-to-r from-blue-500 to-purple-600"
-            loading={loading} // Shows a loader on the button when submitting
-          >
-            {loading
-              ? "Submitting..."
-              : editData
-              ? "Edit Expense"
-              : "Add Expense"}{" "}
-            {/* Dynamic Button Text */}
+    <>
+      {!isCurrentMonth && !editData ? (
+        <div className="flex flex-col items-center gap-1 text-center p-2 mt-4">
+          <h3 className="gradient-text-blue text-lg">
+            Can't add expenses to previous months. Switch to the current month
+            to add expenses.
+          </h3>
+          <Button type="primary" onClick={() => switchToCurrent()}>
+            Switch to Current Month
           </Button>
-        </Form.Item>
-      </Form>
-    </div>
+        </div>
+      ) : (
+        <div className="">
+          <h1 className="gradient-text-blue text-xl font-bold mb-6">
+            {editData ? "Edit Your Expense" : "Add Your Expense"}{" "}
+          </h1>
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={onFinish}
+            className="space-y-4"
+          >
+            {/* Expense Amount */}
+            <Form.Item
+              label="Amount"
+              name="amount"
+              rules={[{ required: true, message: "Please input the amount!" }]}
+            >
+              <Input type="number" placeholder="Enter amount" prefix="₹" />
+            </Form.Item>
+
+            {/* Expense Name */}
+            <Form.Item
+              label="Expense Name"
+              name="name"
+              rules={[
+                { required: true, message: "Please input the expense name!" },
+              ]}
+            >
+              <Input placeholder="Enter expense name" />
+            </Form.Item>
+
+            {/* Budget Category Dropdown */}
+            <Form.Item
+              label="Category"
+              name="categoryId"
+              rules={[{ required: true, message: "Please select a category!" }]}
+            >
+              <Select placeholder="Select budget category">
+                {categories.map((category) => (
+                  <Select.Option key={category._id} value={category._id}>
+                    {category.icon + " " + category.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="bg-gradient-to-r from-blue-500 to-purple-600"
+                loading={loading} // Shows a loader on the button when submitting
+              >
+                {loading
+                  ? "Submitting..."
+                  : editData
+                  ? "Edit Expense"
+                  : "Add Expense"}{" "}
+                {/* Dynamic Button Text */}
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
+      )}
+    </>
   );
 }

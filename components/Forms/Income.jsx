@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 // Dynamically import the EmojiPicker to ensure it's client-side only
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
-export default function IncomeForm({ fetchData, editData }) {
+export default function IncomeForm({ fetchData, editData, handleCloseModal }) {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm(); // To control the form instance
   const [selectedEmoji, setSelectedEmoji] = useState(""); // State to store selected emoji
@@ -79,7 +79,8 @@ export default function IncomeForm({ fetchData, editData }) {
       message.error("An error occurred. Please try again.");
       console.error("Error submitting income:", error);
     } finally {
-      setLoading(false); // Stop loading after submission
+      setLoading(false);
+      handleCloseModal();
     }
   };
 

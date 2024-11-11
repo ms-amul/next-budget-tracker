@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 // Dynamically import the EmojiPicker to ensure it's client-side only
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
-export default function BudgetForm({ fetchData, editData }) {
+export default function BudgetForm({ fetchData, editData, handleCloseModal }) {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm(); // To control the form instance
   const [selectedEmoji, setSelectedEmoji] = useState(""); // State to store selected emoji
@@ -46,11 +46,6 @@ export default function BudgetForm({ fetchData, editData }) {
       icon: selectedEmoji, // Use the selected emoji as the icon
     };
 
-    if (!selectedEmoji) {
-      message.error("Please select an emoji for the budget icon.");
-      return;
-    }
-
     setLoading(true);
 
     try {
@@ -83,7 +78,8 @@ export default function BudgetForm({ fetchData, editData }) {
       message.error("An error occurred. Please try again.");
       console.error("Error submitting budget:", error);
     } finally {
-      setLoading(false); // Stop loading after submission
+      setLoading(false);
+      handleCloseModal();
     }
   };
 
