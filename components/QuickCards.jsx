@@ -19,9 +19,9 @@ const NeumorphicCard = ({ title, amount, icon, onEyeClick }) => {
       start += incrementValue; // Increment the count
       if (start >= end) {
         clearInterval(timer); // Clear the timer if we reach the end
-        setCount(end); // Ensure the count ends at the exact amount
+        setCount(end.toFixed(2)); // Ensure the count ends at the exact amount
       } else {
-        setCount(start); // Update the count
+        setCount(start.toFixed(2)); // Update the count
       }
     }, incrementTime);
 
@@ -46,7 +46,7 @@ const NeumorphicCard = ({ title, amount, icon, onEyeClick }) => {
               {title}
             </h2>
             <p className="text-2xl md:text-3xl font-bold gradient-text-blue m-0">
-              ₹{count} {/* Display the animated count */}
+              ₹{count}
             </p>
           </div>
         </div>

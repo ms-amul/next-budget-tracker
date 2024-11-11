@@ -174,17 +174,3 @@ body {
   border: 2px solid red;
 }
 
-
-
-.download-button {
-  background-color: #003366;
-  color: #ffffff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.download-button:hover {
-  background-color: #002244;
-}

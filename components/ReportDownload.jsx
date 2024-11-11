@@ -2,21 +2,46 @@ import React from "react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import dayjs from "dayjs";
-
-const DownloadReportButton = ({ budgets, incomes, expenses, selectedMonth }) => {
+import { Button } from "antd";
+import { CloudDownloadOutlined } from "@ant-design/icons";
+const DownloadReportButton = ({
+  budgets,
+  incomes,
+  expenses,
+  selectedMonth,
+  user,
+}) => {
   const handleDownload = () => {
     const doc = new jsPDF();
     const monthString = dayjs(selectedMonth).format("MMMM YYYY");
 
-    // Title and Info
+    // Add header for the first page
+    const addHeader = () => {
+      doc.setFillColor("#003366");
+      doc.rect(0, 0, doc.internal.pageSize.width, 20, "F"); // Dark blue header background
+      doc.setTextColor("#ffffff");
+      doc.setFontSize(14);
+      doc.text("Servify's Monthly Export", 14, 13); // Left side header text
+      doc.text(`User: ${user}`, doc.internal.pageSize.width - 70, 13); // Right side header text
+    };
+
+    // Add document title and basic info with margin for the first page
+    const marginTop = 40; // Add a margin to avoid overlap with header
     doc.setTextColor("#003366");
     doc.setFontSize(16);
-    doc.text("Monthly Financial Report", 14, 20);
+    doc.text("Monthly Financial Report", 14, marginTop);
     doc.setFontSize(12);
-    doc.text(`Report for: ${monthString}`, 14, 30);
-    doc.text(`Generated on: ${dayjs().format("MMMM D, YYYY")}`, 14, 37);
+    doc.text(`Report for: ${monthString}`, 14, marginTop + 10);
+    doc.text(
+      `Generated on: ${dayjs().format("MMMM D, YYYY")}`,
+      14,
+      marginTop + 17
+    );
 
-    // Function to add table
+    // Add header to the first page
+    addHeader();
+
+    // Function to add tables
     const addTable = (title, data, columns, startY) => {
       if (!data || data.length === 0) return startY; // Skip if no data
 
@@ -31,16 +56,19 @@ const DownloadReportButton = ({ budgets, incomes, expenses, selectedMonth }) => 
         head: [columns.map((col) => col.name)],
         body: data.map((item) =>
           columns.map((col) => {
-            const value = col.key.split(".").reduce((acc, key) => acc[key], item);
-            return col.key === "createdAt" ? dayjs(value).format("MMMM D, YYYY h:mm A") : value;
+            const value = col.key
+              .split(".")
+              .reduce((acc, key) => acc[key], item);
+            return col.key === "createdAt"
+              ? dayjs(value).format("MMMM D, YYYY h:mm A")
+              : value;
           })
         ),
       });
       return doc.previousAutoTable.finalY + 10;
     };
 
-    // Format each data section
-    let currentY = 50;
+    let currentY = marginTop + 30; // Start content below the title section
     currentY = addTable(
       "Budgets",
       budgets,
@@ -68,7 +96,7 @@ const DownloadReportButton = ({ budgets, incomes, expenses, selectedMonth }) => 
         { key: "name", name: "Name" },
         { key: "amount", name: "Amount" },
         { key: "budgetId.name", name: "Budget Category" },
-        { key: "createdAt", name: "Date" }, // New date column with formatted date
+        { key: "createdAt", name: "Date" },
       ],
       currentY
     );
@@ -77,9 +105,15 @@ const DownloadReportButton = ({ budgets, incomes, expenses, selectedMonth }) => 
   };
 
   return (
-    <button onClick={handleDownload} className="download-button">
-      Download Report
-    </button>
+    <Button
+      onClick={handleDownload}
+      color="primary"
+      variant="outlined"
+      icon={<CloudDownloadOutlined />}
+      className="text-cyan-100"
+    >
+      PDF
+    </Button>
   );
 };
 

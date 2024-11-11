@@ -7,6 +7,7 @@ import ReactMarkdown from "react-markdown";
 import dayjs from "dayjs";
 
 const { MonthPicker } = DatePicker;
+import DownloadReportButton from "./ReportDownload";
 
 const BudgetSuggestionComponent = ({
   income,
@@ -14,6 +15,7 @@ const BudgetSuggestionComponent = ({
   budget,
   selectedMonth,
   setSelectedMonth,
+  user,
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -38,12 +40,14 @@ const BudgetSuggestionComponent = ({
 
   const getBudgetSuggestions = async () => {
     if (!income.length || !expenses.length || !budget.length) {
-      setResponseText("Please add at least one item in each section: income, expenses, and budget.");
+      setResponseText(
+        "Please add at least one item in each section: income, expenses, and budget."
+      );
       return;
     }
-  
+
     setLoading(true);
-  
+
     const prompt = `I have the following data:
     - Income: ₹${JSON.stringify(income)}
     - Expenses: ₹${JSON.stringify(expenses)}
@@ -57,7 +61,7 @@ const BudgetSuggestionComponent = ({
     4. **Savings Report**: How much I can potentially save and any tips on increasing savings.
   
     Keep the response concise and consistent.`;
-  
+
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
       const result = await model.generateContent(prompt);
@@ -72,11 +76,17 @@ const BudgetSuggestionComponent = ({
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="text-right">
       <div className="flex justify-end gap-2 mb-3">
+        <DownloadReportButton
+          budgets={budget}
+          incomes={income}
+          expenses={expenses}
+          selectedMonth={selectedMonth}
+          user={user}
+        />
         <Button
           color="primary"
           variant="outlined"
