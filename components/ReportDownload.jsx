@@ -6,7 +6,6 @@ import { Button } from "antd";
 import { Chart, PieController, ArcElement, Tooltip, Legend } from "chart.js";
 import { CloudDownloadOutlined } from "@ant-design/icons";
 
-// Register the components
 Chart.register(PieController, ArcElement, Tooltip, Legend);
 
 const DownloadReportButton = ({
@@ -17,12 +16,13 @@ const DownloadReportButton = ({
   user,
 }) => {
   const chartRef = useRef(null);
-  const chartInstanceRef = useRef(null); // Store the chart instance
-  const [loading, setLoading] = useState(false); // State for loading button
+  const chartInstanceRef = useRef(null);
+  const [loading, setLoading] = useState(false);
 
   const handleDownload = () => {
-    setLoading(true); // Start loading state
+    setLoading(true);
     const doc = new jsPDF();
+    
     const monthString = dayjs(selectedMonth).format("MMMM YYYY");
 
     const totalBudget = budgets.reduce((sum, budget) => sum + budget.amount, 0);
@@ -91,7 +91,6 @@ const DownloadReportButton = ({
 
     const generatePDF = () => {
       addHeader();
-
       const marginTop = 40;
       doc.setTextColor("#003366");
       doc.setFontSize(16);

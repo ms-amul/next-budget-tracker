@@ -272,7 +272,7 @@ const BudgetSuggestionComponent = ({
         {isCached && lastCallTimestamp && (
           <Alert
             message={
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col items-center gap-2 md:flex-row">
                 <span>
                   <strong>⏰ Last API Call:</strong> {formatTimestamp(lastCallTimestamp)}
                 </span>
