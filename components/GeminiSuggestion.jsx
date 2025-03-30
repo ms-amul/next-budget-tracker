@@ -21,9 +21,10 @@ const BudgetSuggestionComponent = ({
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [responseText, setResponseText] = useState("");
-  const [isCached, setIsCached] = useState(false); // Track cached response
-  const [lastCallTimestamp, setLastCallTimestamp] = useState(null); // Store last API call timestamp
-  const [timeRemaining, setTimeRemaining] = useState(""); // Timer for the next call
+  const [isCached, setIsCached] = useState(false);
+  const [lastCallTimestamp, setLastCallTimestamp] = useState(null);
+  const [timeRemaining, setTimeRemaining] = useState("");
+  const [promptResponses, setPromptResponses] = useState([]);
 
   const genAI = new GoogleGenAI({
     apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
@@ -223,15 +224,6 @@ const BudgetSuggestionComponent = ({
                 </span>
               </h1>
             </div>
-            <Button
-              size="large"
-              color="primary"
-              variant="fill"
-              className="flex items-center gap-2 text-cyan-500"
-              onClick={handleShare}
-            >
-              <FaShareNodes className="scale-125" /> Share
-            </Button>
           </div>
         }
         open={isModalVisible}
@@ -247,6 +239,16 @@ const BudgetSuggestionComponent = ({
             className="text-cyan-500"
           >
             OK
+          </Button>,
+          <Button
+            size="large"
+            color="primary"
+            variant="fill"
+            className="text-cyan-500"
+            key="share"
+            onClick={handleShare}
+          >
+            <FaShareNodes className="scale-125" /> Share
           </Button>,
         ]}
         width={1000}
@@ -264,26 +266,28 @@ const BudgetSuggestionComponent = ({
             type="warning"
             showIcon
             className="mb-3"
+            closable
           />
         )}
         {isCached && lastCallTimestamp && (
           <Alert
             message={
               <div className="flex justify-between items-center">
-                <strong>
-                  ⏰ Last API Call: {formatTimestamp(lastCallTimestamp)}
-                </strong>
+                <span>
+                  <strong>⏰ Last API Call:</strong> {formatTimestamp(lastCallTimestamp)}
+                </span>
                 <Badge
-                  count={`New Call Available in: ${timeRemaining}`}
+                  count={`New Call Available in: ${timeRemaining} hrs`}
                   style={{
                     backgroundColor: "#ff4d4f",
-                    color: "white"
+                    color: "white",
                   }}
                 />
               </div>
             }
-            type="error"
+            type="info"
             showIcon
+            closable
             className="mb-3"
           />
         )}

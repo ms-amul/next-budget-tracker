@@ -163,8 +163,8 @@ body {
 
 .quickcards .Income {
   background-image: radial-gradient(rgba(0, 255, 0, 0.2), rgba(0, 128, 0, 0.2));
-  color: rgb(0, 255, 0);
-  border: 2px solid rgb(0, 185, 0);
+  color: rgb(0, 215, 0);
+  border: 2px solid rgb(0, 135, 0);
 }
 
 .quickcards .Expenses {
