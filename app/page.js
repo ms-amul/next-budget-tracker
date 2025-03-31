@@ -10,7 +10,7 @@ export default function LandingPage() {
 
   if (status === "loading") {
     return (
-      <div className="flex flex-col h-screen w-full fixed items-center justify-center gap-3">
+      <div className="flex flex-col w-full items-center justify-center gap-3">
         <Spin size="large" />
         <p className="text-lg font-semibold text-gray-600">
           Loading your data!

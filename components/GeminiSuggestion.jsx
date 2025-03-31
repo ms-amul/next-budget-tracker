@@ -81,7 +81,6 @@ const BudgetSuggestionComponent = ({
 
   const handleClose = () => {
     setIsModalVisible(false);
-    setResponseText("");
   };
 
   const handleMonthChange = (date) => {

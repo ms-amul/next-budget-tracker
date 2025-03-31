@@ -123,7 +123,7 @@ export default function Dashboard() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="flex flex-col scale-150 h-screen w-full fixed items-center justify-center gap-3">
+      <div className="flex flex-col scale-150 w-full items-center justify-center gap-3">
         <Spin size="large"></Spin>
         <p className="text-slate-200">Loading your data!</p>
       </div>

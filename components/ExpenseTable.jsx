@@ -8,13 +8,13 @@ import {
   message,
   Popconfirm,
   Input,
+  Tooltip,
 } from "antd";
 import { useEffect, useState } from "react";
-import { FaWallet } from "react-icons/fa"; // Default icon if category icon is missing
+import { FaWallet, FaEdit } from "react-icons/fa";
+import { RiDeleteBin5Fill } from "react-icons/ri";
 import { AlertTwoTone } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { FaEdit } from "react-icons/fa";
-import { RiDeleteBin5Fill } from "react-icons/ri";
 
 const { MonthPicker } = DatePicker;
 const { Option } = Select;
@@ -25,14 +25,18 @@ export default function Dashboard({
   addExpense,
   fetchData,
   selectedMonth,
-  setSelectedMonth
+  setSelectedMonth,
 }) {
-  const currentMonth = dayjs().startOf("month");
-
   const [filteredExpenses, setFilteredExpenses] = useState(expenses);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [searchText, setSearchText] = useState(""); // State to track search input
-  const isCurrentMonth = selectedMonth.isSame(currentMonth, "month");
+  const [searchText, setSearchText] = useState("");
+
+  useEffect(() => {
+    const sortedExpenses = expenses.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+    setFilteredExpenses(sortedExpenses);
+  }, [expenses]);
 
   const deleteExpense = async (id) => {
     const res = await fetch(`/api/expense`, {
@@ -41,203 +45,177 @@ export default function Dashboard({
       headers: { "Content-Type": "application/json" },
     });
     if (res.ok) {
-      message.success("Deleted the expense");
+      message.success("Deleted successfully");
       fetchData();
     } else {
-      message.error("Failed to delete expense. Please try again.");
+      message.error("Failed to delete. Try again.");
     }
   };
 
-  // Handle month filter change
-  const handleMonthChange = (date) => {
-    setSelectedMonth(date);
-  };
-
-  // Budget category filter logic
+  const handleMonthChange = (date) => setSelectedMonth(date);
   const handleCategoryFilter = (categoryId) => {
-    if (!categoryId) {
-      setFilteredExpenses(expenses);
-      return;
-    }
-
-    const filtered = expenses.filter(
-      (expense) => expense.budgetId._id === categoryId
-    );
-
-    // Sort the filtered expenses by createdAt in descending order
-    const sorted = filtered.sort((a, b) => {
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    });
-
-    setFilteredExpenses(sorted);
     setSelectedCategory(categoryId);
-  };
-
-  // Handle search input change
-  const handleSearchChange = (e) => {
-    const text = e.target.value;
-    setSearchText(text);
-
-    const filtered = expenses.filter((expense) =>
-      expense.name.toLowerCase().includes(text.toLowerCase())
+    setFilteredExpenses(
+      categoryId
+        ? expenses.filter((e) => e.budgetId._id === categoryId)
+        : expenses
     );
-    setFilteredExpenses(filtered);
   };
 
-  // Reset filters and show all expenses
+  const handleSearchChange = (e) => {
+    setSearchText(e.target.value);
+    setFilteredExpenses(
+      expenses.filter((expense) =>
+        expense.name.toLowerCase().includes(e.target.value.toLowerCase())
+      )
+    );
+  };
+
   const clearFilters = () => {
-    setSelectedMonth(dayjs());
     setSelectedCategory(null);
     setSearchText("");
+    setFilteredExpenses(expenses);
   };
 
-  useEffect(() => {
-    const sortedExpenses = expenses.sort((a, b) => {
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    });
-    setFilteredExpenses(sortedExpenses);
-    setSelectedCategory(null);
-  }, [expenses]);
-
   return (
-    <div className="table-container mx-auto custom-table">
-      <div className="my-4 text-right">
-        <Button
-          onClick={clearFilters}
-          variant="filled"
-          color="danger"
-          type="dashed"
+    <div className="w-100 mx-auto">
+      <div className="flex flex-wrap gap-3 justify-between items-center mb-2 p-4 rounded-lg shadow-lg bg-slate-900 bg-opacity-75">
+        <Input
+          placeholder="🔍 Search by name"
+          value={searchText}
+          onChange={handleSearchChange}
+          className="w-full sm:w-auto"
+          allowClear
+        />
+        <Select
+          placeholder="📂 Select Category"
+          style={{ width: 180 }}
+          onChange={handleCategoryFilter}
+          value={selectedCategory}
+          allowClear
         >
-          <AlertTwoTone />
-          Reset Filters
+          {getCategories(selectedMonth).map((category) => (
+            <Option key={category._id} value={category._id}>
+              {category.icon || <FaWallet />} {category.name}
+            </Option>
+          ))}
+        </Select>
+
+        <MonthPicker
+          onChange={handleMonthChange}
+          value={selectedMonth}
+          placeholder="📆 Select Month"
+          allowClear={false}
+          inputReadOnly
+          disabledDate={(current) =>
+            current &&
+            (current > dayjs().endOf("month") || current < dayjs("2024-09-01"))
+          }
+        />
+        <Button type="dashed" onClick={clearFilters} className="text-white">
+          <AlertTwoTone /> Reset
         </Button>
       </div>
+
       <Table
         dataSource={filteredExpenses}
+        pagination={{ pageSize: 6 }}
+        rowKey="_id"
+        scroll={{ x: "max-content" }}
+        bordered
+        className="shadow-lg bg-gray-900 bg-opacity-75 rounded-lg"
         columns={[
           {
-            title: (
-              <div>
-                <Input
-                  placeholder="Search by name"
-                  value={searchText}
-                  onChange={handleSearchChange}
-                  className="w-[120px] md:w-auto"
-                />
-              </div>
-            ),
+            title: "Expense Name",
             dataIndex: "name",
             key: "name",
             fixed: "left",
+            width: 180,
+            render: (text) => (
+              <Tooltip title={text}>
+                <span className="truncate max-w-[150px] block">{text}</span>
+              </Tooltip>
+            ),
           },
           {
             title: (
-              <div>
+              <span>
                 Amount (₹{" "}
-                {filteredExpenses.reduce(
-                  (total, expense) => total + (expense.amount || 0),
-                  0
-                ).toFixed(2)}
+                {filteredExpenses
+                  .reduce((total, e) => total + (e.amount || 0), 0)
+                  .toFixed(2)}
                 )
-              </div>
+              </span>
             ),
             dataIndex: "amount",
             key: "amount",
+            sorter: (a, b) => a.amount - b.amount,
             render: (amount) => `₹ ${amount.toFixed(2)}`,
           },
           {
-            title: (
-              <div>
-                <Select
-                  placeholder="Select Category"
-                  style={{ width: 150, marginLeft: "10px" }}
-                  onChange={handleCategoryFilter}
-                  value={selectedCategory}
-                  allowClear
-                >
-                  {getCategories(selectedMonth).map((category) => (
-                    <Option
-                      key={category._id}
-                      value={category._id}
-                      className="flex items-center"
-                    >
-                      {category.icon ? category.icon : <FaWallet />}{" "}
-                      {category.name}
-                    </Option>
-                  ))}
-                </Select>
-              </div>
-            ),
+            title: "Category",
             dataIndex: "budgetId",
             key: "budgetId",
-            render: (budgetId) => (
+            render: (budget) => (
               <div className="flex items-center space-x-2">
-                {budgetId.icon ? budgetId.icon : <FaWallet />}{" "}
-                <span>{budgetId.name}</span>
+                {budget.icon || <FaWallet />} <span>{budget.name}</span>
               </div>
             ),
           },
           {
-            title: (
-              <div className="">
-                <MonthPicker
-                  onChange={handleMonthChange}
-                  value={selectedMonth}
-                  placeholder="Select Month"
-                  allowClear={false}
-                  inputReadOnly={true}
-                  disabledDate={(current) =>
-                    current && (current > dayjs().endOf("month") || current < dayjs("2024-09-01"))
-                  }
-                />
-              </div>
+            title: "Date",
+            key: "createdAt",
+            render: (_, record) => (
+              <span className="text-sm text-gray-300">
+                {dayjs(record.createdAt).format("DD MMM, YYYY")}
+              </span>
             ),
-            key: "date-actions",
+          },
+          {
+            title: "Actions",
+            key: "actions",
             render: (_, record) => (
               <div className="flex gap-2">
-                <span className="text-white bg-cyan-900 text-xs font-normal p-2 rounded-full">
-                  {new Date(record.createdAt).toLocaleDateString()}
-                </span>
-                {/* Action buttons */}
-                <div className="space-x-2">
-                  <Button onClick={() => addExpense(record)}>
-                    <FaEdit />
-                  </Button>
-                  <Popconfirm
-                    title="Are you sure you want to delete this Expense?"
-                    onConfirm={() => deleteExpense(record._id)} // Confirm delete
-                    okText="Yes"
-                    cancelText="No"
-                  >
-                    <Button danger>
-                      <RiDeleteBin5Fill />
-                    </Button>
-                  </Popconfirm>
-                </div>
+                <Button
+                  type="text"
+                  icon={
+                    <FaEdit className="text-blue-400 hover:text-blue-600 transition duration-300 transform hover:scale-110" />
+                  }
+                  onClick={() => addExpense(record)}
+                />
+                <Popconfirm
+                  title="Are you sure to delete this expense?"
+                  onConfirm={() => deleteExpense(record._id)}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button
+                    type="text"
+                    danger
+                    icon={
+                      <RiDeleteBin5Fill className="text-red-400 hover:text-red-600 transition duration-300 transform hover:scale-110" />
+                    }
+                  />
+                </Popconfirm>
               </div>
             ),
           },
         ]}
-        rowKey="_id"
-        scroll={{ x: "max-content" }}
-        className="shadow-md"
         locale={{
           emptyText: (
             <Empty
               description={
-                <div className="text-center">
-                  <p className="mb-3 gradient-text-blue">
+                <div className="text-center text-gray-400">
+                  <p className="mb-3">
                     No expenses found for {selectedMonth.format("MMMM YYYY")}.
                   </p>
-                  {isCurrentMonth && (
-                    <Button
-                      type="primary"
-                      shape="round"
-                      onClick={() => addExpense()}
-                    >
-                      Add Expense
-                    </Button>
-                  )}
+                  <Button
+                    type="primary"
+                    shape="round"
+                    onClick={() => addExpense()}
+                  >
+                    Add Expense
+                  </Button>
                 </div>
               }
             />

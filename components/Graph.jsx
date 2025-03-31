@@ -1,6 +1,3 @@
-import { useEffect, useState } from "react";
-import { Line } from "react-chartjs-2";
-import { BiSolidCommentError } from "react-icons/bi";
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -14,6 +11,12 @@ import {
 } from "chart.js";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
+import { useEffect, useRef, useState } from "react";
+import { Line } from "react-chartjs-2";
+import { BiSolidCommentError } from "react-icons/bi";
+import { Alert } from "antd";
+import { BsGraphUpArrow } from "react-icons/bs";
+
 
 dayjs.extend(isBetween);
 
@@ -36,8 +39,11 @@ export default function MonthlyExpenseGraph({
   const [dailyExpenses, setDailyExpenses] = useState([]);
   const [totalBudget, setTotalBudget] = useState(0);
   const [isBlinking, setIsBlinking] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
 
-  const calculateDailyExpenses = (selectedMonth) => {
+  const chartRef = useRef(null);
+
+  useEffect(() => {
     const today = dayjs();
     const startOfMonth = selectedMonth.startOf("month");
     const endOfMonth = selectedMonth.endOf("month");
@@ -66,68 +72,56 @@ export default function MonthlyExpenseGraph({
 
     const dailyData = [];
     let runningTotal = 0;
-
-    // Determine the last day to display
     const lastDayToPlot = selectedMonth.isSame(today, "month")
       ? today.date()
       : selectedMonth.daysInMonth();
 
     for (let i = 1; i <= lastDayToPlot; i++) {
       runningTotal += dailyExpenseMap[i] || 0;
-      dailyData.push({
-        day: i,
-        total: runningTotal,
-      });
+      dailyData.push({ day: i, total: runningTotal });
     }
-
     setDailyExpenses(dailyData);
-  };
-
-  useEffect(() => {
-    calculateDailyExpenses(selectedMonth);
+    setShowAlert(runningTotal > monthlyTotalBudget);
   }, [expenses, selectedMonth, budgets]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setIsBlinking((prev) => !prev);
     }, 500);
-
     return () => clearInterval(interval);
   }, []);
 
   const chartData = {
-    labels: Array.from(
-      { length: selectedMonth.daysInMonth() },
-      (_, index) => index + 1
-    ),
+    labels: dailyExpenses.map((data) => data.day),
     datasets: [
       {
         label: "Total Expense (₹)",
         data: dailyExpenses.map((data) => data.total),
         borderColor: "rgba(75, 192, 192, 1)",
-        backgroundColor: "rgba(75, 192, 192, 0.15)",
-        borderWidth: 1,
+        backgroundColor: (context) => {
+          const ctx = context.chart.ctx;
+          const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+          gradient.addColorStop(0, "rgba(75, 192, 192, 0.4)");
+          gradient.addColorStop(1, "rgba(75, 192, 192, 0)");
+          return gradient;
+        },
+        borderWidth: 2,
         fill: true,
         pointBackgroundColor: dailyExpenses.map((_, index) =>
           index === dailyExpenses.length - 1
             ? isBlinking
-              ? "rgba(255, 132, 0, 0.7)"
-              : "rgba(75, 192, 192, 1)"
-            : "rgba(75, 192, 192, 0)"
+              ? "#ff8400"
+              : "#4bc0c0"
+            : "#4bc0c0"
         ),
         pointRadius: dailyExpenses.map((_, index) =>
-          index === dailyExpenses.length - 1 ? 6 : 0
+          index === dailyExpenses.length - 1 ? (isBlinking ? 6 : 4) : 1
         ),
-        pointHoverRadius: dailyExpenses.map((_, index) =>
-          index === dailyExpenses.length - 1 ? 8 : 0
-        ),
+        pointHoverRadius: 8,
       },
       {
         label: "Budget (₹)",
-        data: Array.from(
-          { length: selectedMonth.daysInMonth() },
-          () => totalBudget
-        ),
+        data: Array(dailyExpenses.length).fill(totalBudget),
         borderColor: "rgba(255, 119, 0, 0.6)",
         borderDash: [10, 5],
         fill: false,
@@ -139,45 +133,66 @@ export default function MonthlyExpenseGraph({
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: {
+      duration: 500,
+      easing: "easeInOutQuart",
+    },
     plugins: {
-      legend: {
-        position: "top",
-      },
+      legend: { position: "top" },
       title: {
         display: true,
         text: `Expenses for ${selectedMonth.format("MMMM YYYY")}`,
+        font: { size: 16 },
       },
+
       tooltip: {
         enabled: true,
-        position: "nearest",
+        intersect: false,
         callbacks: {
           title: (tooltipItems) => {
-            const lastPoint = dailyExpenses[dailyExpenses.length - 1];
-            return `${selectedMonth.format("MMMM")} ${lastPoint.day}, ₹${
-              lastPoint.total
-            }`;
+            if (!tooltipItems.length || tooltipItems[0].datasetIndex === 1)
+              return "";
+            const day = tooltipItems[0].label;
+            return `${selectedMonth.format(
+              "MMMM"
+            )} ${day}, ${selectedMonth.format("YYYY")}`;
           },
           label: (tooltipItem) => {
-            return "";
+            if (!tooltipItem || tooltipItem.datasetIndex === 1) return "";
+
+            const expense = tooltipItem.raw;
+            const remainingBudget = totalBudget - expense;
+            let statusMessage = "";
+
+            if (remainingBudget > totalBudget * 0.2) {
+              statusMessage = "✅ Within Budget";
+            } else if (remainingBudget > 0) {
+              statusMessage = "⚠️ Close to Limit";
+            } else {
+              statusMessage = "❌ Over Budget!";
+            }
+            return [
+              `💰 Expense: ₹${expense}`,
+              `💵 Remaining: ₹${remainingBudget}`,
+              statusMessage,
+            ];
           },
         },
+        filter: (tooltipItem) => tooltipItem.datasetIndex === 0, 
       },
     },
     scales: {
       x: {
-        title: {
-          display: true,
-          text: "Days",
-        },
+        title: { display: true, text: "Days" },
         ticks: {
-          autoSkip: false,
+          autoSkip: true,
+          maxRotation: 0,
+          minRotation: 0,
+          autoSkipPadding: 10,
         },
       },
       y: {
-        title: {
-          display: true,
-          text: "Total Expense (₹)",
-        },
+        title: { display: true, text: "Total Expense (₹)" },
         beginAtZero: true,
       },
     },
@@ -185,19 +200,34 @@ export default function MonthlyExpenseGraph({
 
   return (
     <div>
+      {showAlert && (
+        <Alert
+          message="Budget Exceeded!"
+          description="You have exceeded your allocated budget for this month. Consider reviewing your expenses."
+          type="error"
+          showIcon
+          icon={<BsGraphUpArrow />}
+          closable
+          onClose={() => setShowAlert(false)}
+          className="mb-4"
+        />
+      )}
       <div className="flex items-baseline gap-2 justify-end mt-4">
         <BiSolidCommentError className="text-slate-100" />
-        <h3 className="gradient-text-green font-semibold">
+        <h3
+          className={`font-semibold ${
+            totalBudget - dailyExpenses[dailyExpenses.length - 1]?.total < 0
+              ? "text-red-500"
+              : "gradient-text-green"
+          }`}
+        >
           Remaining Budget: ₹{" "}
-          {totalBudget -
-            (dailyExpenses.length > 0
-              ? dailyExpenses[dailyExpenses.length - 1].total
-              : 0)}
+          {totalBudget - (dailyExpenses[dailyExpenses.length - 1]?.total || 0)}
         </h3>
       </div>
 
       <div className="w-full" style={{ height: "500px" }}>
-        <Line data={chartData} options={chartOptions} />
+        <Line ref={chartRef} data={chartData} options={chartOptions} />
       </div>
     </div>
   );

@@ -50,6 +50,13 @@ body {
   left: 30px;
   opacity: 0.15;
 }
+.gradient-text-header {
+  background: linear-gradient(to right, rgb(66, 246, 153), rgb(80, 229, 192));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
 .gradient-text-Budget {
   background: linear-gradient(to right, rgb(66, 246, 228), rgb(80, 154, 229));
   -webkit-background-clip: text;
