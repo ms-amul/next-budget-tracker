@@ -10,6 +10,7 @@ import {
   Tooltip,
 } from "chart.js";
 import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
 import isBetween from "dayjs/plugin/isBetween";
 import { useEffect, useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
@@ -17,7 +18,7 @@ import { BiSolidCommentError } from "react-icons/bi";
 import { Alert } from "antd";
 import { BsGraphUpArrow } from "react-icons/bs";
 
-
+dayjs.extend(utc);
 dayjs.extend(isBetween);
 
 ChartJS.register(
@@ -44,7 +45,7 @@ export default function MonthlyExpenseGraph({
   const chartRef = useRef(null);
 
   useEffect(() => {
-    const today = dayjs();
+    const today = dayjs.utc();
     const startOfMonth = selectedMonth.startOf("month");
     const endOfMonth = selectedMonth.endOf("month");
 
@@ -52,9 +53,7 @@ export default function MonthlyExpenseGraph({
     let monthlyTotalBudget = 0;
 
     budgets.forEach((budget) => {
-      if (dayjs(budget.createdAt).isSame(selectedMonth, "month")) {
         monthlyTotalBudget += budget.amount;
-      }
     });
 
     setTotalBudget(monthlyTotalBudget);

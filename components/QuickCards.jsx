@@ -4,7 +4,7 @@ import { FaEye } from "react-icons/fa6";
 import { useEffect, useState } from "react";
 
 const NeumorphicCard = ({ title, amount, icon, onEyeClick }) => {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState("0.00");
 
   useEffect(() => {
     const end = Number(amount);
@@ -15,13 +15,21 @@ const NeumorphicCard = ({ title, amount, icon, onEyeClick }) => {
     const totalSteps = Math.floor(duration / incrementTime);
     const incrementValue = Math.ceil(end / totalSteps);
 
+    const formatToSevenDigits = (num) => {
+      let str = num.toFixed(2); // Ensure two decimal places first
+      while (str.length < 8) {
+        str += "0"; // Append zeros until length is 7
+      }
+      return str;
+    };
+
     const timer = setInterval(() => {
       start += incrementValue; 
       if (start >= end) {
         clearInterval(timer);
-        setCount(end.toFixed(2));
+        setCount(formatToSevenDigits(end));
       } else {
-        setCount(start.toFixed(2));
+        setCount(formatToSevenDigits(start));
       }
     }, incrementTime);
 
@@ -44,7 +52,7 @@ const NeumorphicCard = ({ title, amount, icon, onEyeClick }) => {
             >
               {title}
             </h2>
-            <p className="text-2xl md:text-3xl font-bold gradient-text-blue m-0">
+            <p className="text-2xl md:text-3xl font-bold gradient-text-white m-0">
               ₹{count}
             </p>
           </div>

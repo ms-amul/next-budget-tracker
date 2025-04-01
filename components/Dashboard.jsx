@@ -7,6 +7,7 @@ import Graph from "@/components/Graph";
 import NeumorphicCard from "@/components/QuickCards";
 import { message, Spin } from "antd";
 import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -14,6 +15,7 @@ import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { GiExpense, GiWallet } from "react-icons/gi";
 
 export default function Dashboard() {
+  dayjs.extend(utc);
   const router = useRouter();
   const { data: session, status } = useSession();
   const [monthlyTotals, setMonthlyTotals] = useState({
@@ -25,7 +27,7 @@ export default function Dashboard() {
   const [budgets, setBudgets] = useState([]);
   const [incomes, setIncomes] = useState([]);
   const [expenses, setExpenses] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState(dayjs());
+  const [selectedMonth, setSelectedMonth] = useState(dayjs.utc());
 
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const [drawerType, setDrawerType] = useState("");
@@ -139,8 +141,7 @@ export default function Dashboard() {
     <div className="p-4">
       <div className="flex gap-1 items-center">
         <h1 className="gradient-text-white text-lg md:text-2xl font-semibold flex items-center">
-          Hello 👋 {session?.user?.name}, manage your finances, budget, and
-          income with AI-powered insights and monthly reports...
+          Hey 👋 {session?.user?.name}, manage your finances with AI-powered insights and monthly reports...
         </h1>
       </div>
 
@@ -151,6 +152,7 @@ export default function Dashboard() {
         selectedMonth={selectedMonth}
         setSelectedMonth={setSelectedMonth}
         user={session?.user?.name}
+        userCreated = {session?.user?.createdAt}
       />
 
       <div className="flex flex-wrap justify-center quickcards">
@@ -191,9 +193,12 @@ export default function Dashboard() {
         fetchData={fetchData}
         selectedMonth={selectedMonth}
         setSelectedMonth={setSelectedMonth}
+        user={session?.user?.name}
+        userCreated = {session?.user?.createdAt}
       />
 
       <CustomDrawer
+        userCreated = {session?.user?.createdAt}
         isDrawerVisible={isDrawerVisible}
         drawerType={drawerType}
         handleCloseDrawer={handleCloseDrawer}

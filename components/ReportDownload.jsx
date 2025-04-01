@@ -2,11 +2,13 @@ import React, { useRef, useState } from "react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
 import { Button } from "antd";
 import { Chart, PieController, ArcElement, Tooltip, Legend } from "chart.js";
 import { CloudDownloadOutlined } from "@ant-design/icons";
 
 Chart.register(PieController, ArcElement, Tooltip, Legend);
+dayjs.extend(utc);
 
 const DownloadReportButton = ({
   budgets,
@@ -23,7 +25,7 @@ const DownloadReportButton = ({
     setLoading(true);
     const doc = new jsPDF();
     
-    const monthString = dayjs(selectedMonth).format("MMMM YYYY");
+    const monthString = dayjs.utc(selectedMonth).format("MMMM YYYY");
 
     const totalBudget = budgets.reduce((sum, budget) => sum + budget.amount, 0);
     const totalIncome = incomes.reduce((sum, income) => sum + income.amount, 0);
@@ -97,7 +99,7 @@ const DownloadReportButton = ({
       doc.text(`Monthly Financial Report of ${user}`, 14, marginTop);
       doc.setFontSize(12);
       doc.text(`Report for: ${monthString}`, 14, marginTop + 10);
-      doc.text(`Generated on: ${dayjs().format("MMMM D, YYYY")}`, 14, marginTop + 17);
+      doc.text(`Generated on: ${dayjs.utc().format("MMMM D, YYYY")}`, 14, marginTop + 17);
 
       // Centered chart and remaining budget text
       const chartImage = chartRef.current.toDataURL("image/png");

@@ -6,6 +6,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaShareNodes } from "react-icons/fa6";
 import ReactMarkdown from "react-markdown";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 const { MonthPicker } = DatePicker;
 import DownloadReportButton from "./ReportDownload";
@@ -17,7 +18,9 @@ const BudgetSuggestionComponent = ({
   selectedMonth,
   setSelectedMonth,
   user,
+  userCreated,
 }) => {
+  dayjs.extend(utc);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [responseText, setResponseText] = useState("");
@@ -51,7 +54,7 @@ const BudgetSuggestionComponent = ({
     }
   };
 
-  useEffect(() => {
+  const getCache = () => {
     const cachedData = localStorage.getItem("financial_report");
     if (cachedData) {
       const { response, timestamp } = JSON.parse(cachedData);
@@ -67,13 +70,19 @@ const BudgetSuggestionComponent = ({
         }, 1000);
         return () => clearInterval(timer);
       } else {
+        setIsCached(false);
         localStorage.removeItem("financial_report");
       }
     }
+  };
+
+  useEffect(() => {
+    getCache();
   }, []);
 
   const showModal = () => {
     setIsModalVisible(true);
+    getCache();
     if (!isCached) {
       getBudgetSuggestions();
     }
@@ -90,7 +99,6 @@ const BudgetSuggestionComponent = ({
   const handleShare = () => {
     const sanitizedText = responseText
       .replace(/(\*|\#|\-|\>)/g, "")
-      .replace(/\n\s*\n/g, "\n")
       .trim();
 
     const textToShare = `My Financial Report by Servify:\n\n${sanitizedText}`;
@@ -167,6 +175,7 @@ const BudgetSuggestionComponent = ({
           timestamp,
         })
       );
+      setIsCached(true);
       setLastCallTimestamp(timestamp);
       setPromptResponses([...promptResponses, generatedText]);
     } catch (error) {
@@ -206,7 +215,8 @@ const BudgetSuggestionComponent = ({
           format="MMMM YYYY"
           disabledDate={(current) =>
             current &&
-            (current > dayjs().endOf("month") || current < dayjs("2024-09-01"))
+            (current > dayjs.utc().endOf("month") ||
+              current < dayjs(userCreated))
           }
         />
       </div>
@@ -273,7 +283,8 @@ const BudgetSuggestionComponent = ({
             message={
               <div className="flex flex-col items-center gap-2 md:flex-row">
                 <span>
-                  <strong>⏰ Last API Call:</strong> {formatTimestamp(lastCallTimestamp)}
+                  <strong>⏰ Last API Call:</strong>{" "}
+                  {formatTimestamp(lastCallTimestamp)}
                 </span>
                 <Badge
                   count={`New Call Available in: ${timeRemaining} hrs`}

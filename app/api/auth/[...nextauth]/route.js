@@ -15,6 +15,7 @@ const handler = NextAuth({
       await connectMongo();
       const user = await User.findOne({ email: session.user.email });
       session.user.id = user ? user._id.toString() : null;
+      session.user.createdAt = user ? user.createdAt : null;
       return session;
     },
     async signIn({ profile }) {

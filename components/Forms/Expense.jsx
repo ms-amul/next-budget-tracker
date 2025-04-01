@@ -2,7 +2,8 @@
 
 import { Form, Input, Button, Select, message } from "antd";
 import { useState, useEffect } from "react";
-import dayjs from "dayjs"; // Assuming dayjs is installed
+import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
 
 export default function Expense({
   getCategories,
@@ -12,13 +13,14 @@ export default function Expense({
   switchToCurrent,
   handleCloseModal
 }) {
+  dayjs.extend(utc);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const currentMonth = dayjs();
+      const currentMonth = dayjs.utc();
       const budgetCategories = await getCategories(currentMonth);
       setCategories(budgetCategories);
     };

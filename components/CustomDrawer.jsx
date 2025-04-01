@@ -1,11 +1,12 @@
 import BudgetCard from "@/components/SidebarCards/BudgetCard";
 import IncomeCard from "@/components/SidebarCards/IncomeCard";
 import { Button, DatePicker, Drawer, Empty } from "antd";
-import dayjs from "dayjs"; // Assuming dayjs is installed for date handling
-import { useMemo, useState } from "react";
+import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
 const { MonthPicker } = DatePicker;
 
 const CustomDrawer = ({
+  userCreated,
   isDrawerVisible,
   drawerType,
   handleCloseDrawer,
@@ -16,40 +17,12 @@ const CustomDrawer = ({
   selectedMonth,
   setSelectedMonth
 }) => {
-
-  // Get the current month
-  const currentMonth = dayjs().startOf("month");
-
-  // Helper function to group data by month and year
-  const groupByMonth = (data) => {
-    return data.reduce((acc, item) => {
-      const date = dayjs(item.createdAt);
-      const monthYear = date.format("MMMM YYYY"); // e.g., "September 2024"
-
-      if (!acc[monthYear]) {
-        acc[monthYear] = [];
-      }
-      acc[monthYear].push(item);
-      return acc;
-    }, {});
-  };
-
-  // Group budgets and incomes by month
-  const groupedBudgets = useMemo(() => groupByMonth(budgets), [budgets]);
-  const groupedIncomes = useMemo(() => groupByMonth(incomes), [incomes]);
-
-  // Filter budgets and incomes based on selected month
-  const filteredBudgets =
-    groupedBudgets[selectedMonth.format("MMMM YYYY")] || [];
-  const filteredIncomes =
-    groupedIncomes[selectedMonth.format("MMMM YYYY")] || [];
-
-  // Handle month picker change
+  dayjs.extend(utc);
+  const currentMonth = dayjs.utc().startOf("month");
   const handleMonthChange = (date) => {
     setSelectedMonth(date);
   };
 
-  // Check if the selected month is the current month
   const isCurrentMonth = selectedMonth.isSame(currentMonth, "month");
 
   return (
@@ -86,9 +59,10 @@ const CustomDrawer = ({
           placeholder="Select Month"
           allowClear={false}
           inputReadOnly={true}
+          format="MMMM YYYY"
           disabledDate={(current) =>
             current &&
-            (current > dayjs().endOf("month") || current < dayjs("2024-09-01"))
+            (current > dayjs.utc().endOf("month") || current < dayjs(userCreated))
           }
         />
       </div>
@@ -100,8 +74,8 @@ const CustomDrawer = ({
 
       {drawerType === "budget" && (
         <div>
-          {filteredBudgets.length > 0 ? (
-            filteredBudgets.map((budget) => (
+          {budgets.length > 0 ? (
+            budgets.map((budget) => (
               <BudgetCard
                 key={budget._id}
                 budget={budget}
@@ -140,8 +114,8 @@ const CustomDrawer = ({
 
       {drawerType === "income" && (
         <div>
-          {filteredIncomes.length > 0 ? (
-            filteredIncomes.map((income) => (
+          {incomes.length > 0 ? (
+            incomes.map((income) => (
               <IncomeCard
                 key={income._id}
                 income={income}

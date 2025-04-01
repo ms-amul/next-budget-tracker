@@ -3,6 +3,7 @@ import Budget from "@/components/Forms/Budget";
 import Income from "@/components/Forms/Income";
 import Expense from "@/components/Forms/Expense";
 import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
 
 const CustomModal = ({
   isModalVisible,
@@ -13,9 +14,11 @@ const CustomModal = ({
   getBudgetCategoriesForDropdown,
   fetchData,
   selectedMonth,
-  setSelectedMonth, // added to allow switching to current month
+  setSelectedMonth,
 }) => {
-  const isCurrentMonth = selectedMonth.isSame(dayjs(), "month");
+
+  dayjs.extend(utc);
+  const isCurrentMonth = selectedMonth.isSame(dayjs.utc(), "month");
   const switchToCurrent = () => {
     setSelectedMonth(dayjs());
   };

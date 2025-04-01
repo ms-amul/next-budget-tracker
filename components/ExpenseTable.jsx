@@ -11,22 +11,25 @@ import {
   Tooltip,
 } from "antd";
 import { useEffect, useState } from "react";
-import { FaWallet, FaEdit } from "react-icons/fa";
+import { FaWallet, FaEdit, FaShareAlt } from "react-icons/fa";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { AlertTwoTone } from "@ant-design/icons";
 import dayjs from "dayjs";
-
+import utc from "dayjs/plugin/utc";
 const { MonthPicker } = DatePicker;
 const { Option } = Select;
 
-export default function Dashboard({
+export default function ExpenseTable({
   expenses,
   getCategories,
   addExpense,
   fetchData,
   selectedMonth,
   setSelectedMonth,
+  user,
+  userCreated,
 }) {
+  dayjs.extend(utc);
   const [filteredExpenses, setFilteredExpenses] = useState(expenses);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchText, setSearchText] = useState("");
@@ -77,6 +80,30 @@ export default function Dashboard({
     setFilteredExpenses(expenses);
   };
 
+  const shareExpense = (expense) => {
+    const shareData = {
+      title: "Expense Details",
+      text: `${user}'s Expense detail\n💰 Expense: ${
+        expense.name
+      }\n📅 Date: ${dayjs(expense.createdAt).format(
+        "DD MMM, YYYY"
+      )}\n📂 Category: ${
+        expense.budgetId.name
+      }\n💵 Amount: ₹${expense.amount.toFixed(
+        2
+      )}\n\nTrack your expenses easily at: ${window.location.origin}`,
+    };
+
+    if (navigator.share) {
+      navigator
+        .share(shareData)
+        .then(() => console.log("Shared successfully"))
+        .catch((err) => console.error("Error sharing:", err));
+    } else {
+      message.info("Sharing not supported on this device.");
+    }
+  };
+
   return (
     <div className="w-100 mx-auto">
       <div className="flex flex-wrap gap-3 justify-between items-center mb-2 p-4 rounded-lg shadow-lg bg-slate-900 bg-opacity-75">
@@ -89,10 +116,10 @@ export default function Dashboard({
         />
         <Select
           placeholder="📂 Select Category"
-          style={{ width: 180 }}
           onChange={handleCategoryFilter}
           value={selectedCategory}
           allowClear
+          className="w-full sm:w-auto"
         >
           {getCategories(selectedMonth).map((category) => (
             <Option key={category._id} value={category._id}>
@@ -107,9 +134,11 @@ export default function Dashboard({
           placeholder="📆 Select Month"
           allowClear={false}
           inputReadOnly
+          format="MMMM YYYY"
           disabledDate={(current) =>
             current &&
-            (current > dayjs().endOf("month") || current < dayjs("2024-09-01"))
+            (current > dayjs.utc().endOf("month") ||
+              current < dayjs(userCreated))
           }
         />
         <Button type="dashed" onClick={clearFilters} className="text-white">
@@ -126,18 +155,6 @@ export default function Dashboard({
         className="shadow-lg bg-gray-900 bg-opacity-75 rounded-lg"
         columns={[
           {
-            title: "Expense Name",
-            dataIndex: "name",
-            key: "name",
-            fixed: "left",
-            width: 180,
-            render: (text) => (
-              <Tooltip title={text}>
-                <span className="truncate max-w-[150px] block">{text}</span>
-              </Tooltip>
-            ),
-          },
-          {
             title: (
               <span>
                 Amount (₹{" "}
@@ -149,8 +166,20 @@ export default function Dashboard({
             ),
             dataIndex: "amount",
             key: "amount",
+            fixed: "left",
             sorter: (a, b) => a.amount - b.amount,
             render: (amount) => `₹ ${amount.toFixed(2)}`,
+          },
+          {
+            title: "Expense Name",
+            dataIndex: "name",
+            key: "name",
+            width: 180,
+            render: (text) => (
+              <Tooltip title={text}>
+                <span className="truncate max-w-[150px] block">{text}</span>
+              </Tooltip>
+            ),
           },
           {
             title: "Category",
@@ -197,6 +226,13 @@ export default function Dashboard({
                     }
                   />
                 </Popconfirm>
+                <Button
+                  type="text"
+                  icon={
+                    <FaShareAlt className="text-green-400 hover:text-green-600 transition duration-300 transform hover:scale-110" />
+                  }
+                  onClick={() => shareExpense(record)}
+                />
               </div>
             ),
           },
