@@ -182,3 +182,10 @@ body {
   color: rgb(255, 22, 22);
   border: 2px solid red;
 }
+.ant-drawer-body {
+  padding: 0 !important;
+}
+.ant-drawer-content{
+  background: linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(15, 0, 20, 0.8)) !important;
+  backdrop-filter: blur(12px);
+}
