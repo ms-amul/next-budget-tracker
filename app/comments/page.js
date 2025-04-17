@@ -68,7 +68,7 @@ export default function CommentsPage() {
       }
       await resetAndFetch();
     } catch (error) {
-      message.error(response?.error || "Error deleting comment");
+      message.error("Error deleting comment");
       console.error("Error deleting comment:", error);
     }
   };
@@ -105,6 +105,75 @@ export default function CommentsPage() {
       }
     };
   }, [loaderRef, loadMore, loading, hasMore]);
+
+  // Pull to refresh logo effect
+  useEffect(() => {
+    let startY = 0;
+    let dragging = false;
+    const threshold = 80;
+
+    const dragger = document.createElement("div");
+    dragger.className = "refresh-dragger";
+
+    const logo = document.createElement("img");
+    logo.src = "/logo.png";
+    logo.alt = "Logo";
+    logo.className = "refresh-logo";
+
+    const refreshText = document.createElement("div");
+    refreshText.className = "refresh-text";
+    refreshText.textContent = "Pull down to refresh";
+
+    dragger.appendChild(logo);
+    dragger.appendChild(refreshText);
+
+    document.body.appendChild(dragger);
+
+    const onTouchStart = (e) => {
+      if (window.scrollY === 0) {
+        startY = e.touches[0].clientY;
+        dragging = true;
+      }
+    };
+
+    const onTouchMove = (e) => {
+      if (!dragging) return;
+      const currentY = e.touches[0].clientY;
+      const distance = currentY - startY;
+      if (distance > 0) {
+        dragger.style.height = `${Math.min(distance, threshold * 1.5)}px`;
+        refreshText.textContent =
+          distance > threshold ? "Release to refresh" : "Pull down to refresh";
+      }
+    };
+
+    const onTouchEnd = () => {
+      if (!dragging) return;
+      if (parseInt(dragger.style.height) > threshold) {
+        dragger.innerHTML = `<img src="/logo.png" alt="Refreshing..." class="refresh-logo spin" />`;
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      } else {
+        dragger.style.height = "0px";
+      }
+      dragging = false;
+    };
+
+    window.addEventListener("touchstart", onTouchStart);
+    window.addEventListener("touchmove", onTouchMove);
+    window.addEventListener("touchend", onTouchEnd);
+
+    return () => {
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+
+      if (document.body.contains(dragger)) {
+        document.body.removeChild(dragger);
+      }
+    };
+  }, []);
 
   if (status === "unauthenticated") {
     router.push("/");

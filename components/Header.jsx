@@ -2,7 +2,12 @@ import { Button, Drawer, Popconfirm } from "antd";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { MdClose, MdLogout, MdOutlineComment, MdOutlineDashboardCustomize } from "react-icons/md";
+import {
+  MdClose,
+  MdLogout,
+  MdOutlineComment,
+  MdOutlineDashboardCustomize,
+} from "react-icons/md";
 
 import { useRouter } from "next/navigation";
 import { VscDashboard } from "react-icons/vsc";
@@ -96,7 +101,9 @@ export default function Header() {
 
                     <Button
                       type="text"
-                      icon={<MdOutlineComment className="text-purple-400 text-2xl" />}
+                      icon={
+                        <MdOutlineComment className="text-purple-400 text-2xl" />
+                      }
                       className="w-11/12 text-lg font-medium text-white hover:bg-green-500/10 hover:text-green-400 flex justify-start py-7"
                       onClick={handleRedirectToComments}
                     >
@@ -127,11 +134,13 @@ export default function Header() {
           </>
         ) : (
           <Button
-            type="primary"
-            icon={<FcGoogle className="text-xl" />}
+            color="primary"
+            variant="fill"
+            size="large"
             onClick={() => signIn("google")}
-            className="font-bold text-cyan-200"
+            className="flex items-center font-bold text-cyan-200"
           >
+            <FcGoogle />
             Log In
           </Button>
         )}
