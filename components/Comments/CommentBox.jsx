@@ -85,7 +85,11 @@ const CommentBox = React.memo(
             <div className="flex items-center gap-3">
               <div className="bg-blue-900/70 text-blue-300 text-[11px] px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm backdrop-blur-md border border-blue-800">
                 <AiOutlineClockCircle className="text-xs" />
-                {new Date(comment.createdAt).toLocaleTimeString([], {
+                {new Date(comment.createdAt).toLocaleString([], {
+                  weekday: "short",
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
                   hour: "2-digit",
                   minute: "2-digit",
                 })}

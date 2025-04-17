@@ -69,7 +69,7 @@ export async function GET(req) {
     const query = { parentId };
 
     const comments = await Comment.find(query)
-      .populate("userId", "_id name image email") // include _id explicitly
+      .populate("userId", "_id name image email")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
